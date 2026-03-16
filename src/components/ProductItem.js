@@ -72,7 +72,9 @@ const ProductItem = observer(({ product }) => {
                     <Image
                         width="100%"
                         height={200}
-                        src={`${process.env.REACT_APP_API_URL}/static/${product.img}`}
+                        src={product.img?.startsWith('http')
+                            ? product.img
+                            : `${process.env.REACT_APP_API_URL}/static/${product.img}`}
                         alt={product.name}
                         onClick={() => navigate(`/product/${product.id}`)}
                         style={{ objectFit: 'cover' }}
@@ -135,5 +137,5 @@ const ProductItem = observer(({ product }) => {
         </Col>
     );
 });
-
+//src
 export default ProductItem;

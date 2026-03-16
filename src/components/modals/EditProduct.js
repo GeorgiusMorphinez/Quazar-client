@@ -17,14 +17,13 @@ const EditProduct = ({ show, onHide, productId }) => {
     const [specificData, setSpecificData] = useState({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [existingData, setExistingData] = useState(null);
+
 
     useEffect(() => {
         if (productId) {
             const loadProduct = async () => {
                 try {
                     const data = await fetchOneProduct(productId);
-                    setExistingData(data);
                     setName(data.name);
                     setPrice(data.price);
                     setDescription(data.description);
@@ -49,14 +48,14 @@ const EditProduct = ({ show, onHide, productId }) => {
             };
             loadProduct();
         }
-    }, [productId]);
+    }, [productId, product, game]);
 
     useEffect(() => {
         fetchProductTypes().then(data => product.setTypes(data));
         fetchGenres().then(data => game.setGenres(data));
         fetchPublishers().then(data => game.setPublishers(data));
         fetchPlatforms().then(data => setPlatforms(data));
-    }, []);
+    }, [product, game]);
 
     const handleSpecificDataChange = (key, value) => {
         setSpecificData(prev => ({ ...prev, [key]: value }));

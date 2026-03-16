@@ -9,7 +9,7 @@ const Orders = observer(() => {
 
     useEffect(() => {
         fetchOrders().then(data => order.setOrders(data));
-    }, []);
+    }, [order]);
 
     return (
         <Container className="d-flex flex-column align-items-center mt-4" style={{ height: '80vh', overflowY: 'auto' }}>

@@ -35,4 +35,5 @@ export const updateRating = async (productId, value) => {
     }
 };
 
-export default { createRating, getRatings, updateRating };
+const ratingAPI = { createRating, getRatings, updateRating };
+export default ratingAPI;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
 import { useParams } from 'react-router-dom';
 import { Button, Container, Row, Col, Image, Spinner } from 'react-bootstrap';
 import { fetchOneProduct } from '../http/productAPI';
@@ -6,6 +6,7 @@ import { createRating } from '../http/ratingAPI';
 import { Context } from '../index';
 import { observer } from 'mobx-react-lite';
 import EditProduct from '../components/modals/EditProduct';
+
 
 const ProductPage = observer(() => {
     const { user } = useContext(Context);
@@ -21,23 +22,22 @@ const ProductPage = observer(() => {
     const [editShow, setEditShow] = useState(false);
     const { id } = useParams();
 
-    const loadProduct = async () => {
+    const loadProduct = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
             const data = await fetchOneProduct(id);
             setProduct(data);
         } catch (e) {
-            console.error('Load error:', e);
             setError('Ошибка загрузки данных');
         } finally {
             setLoading(false);
         }
-    };
+    }, [id]);
 
     useEffect(() => {
         loadProduct();
-    }, [id]);
+    }, [loadProduct]);
 
     const handleRatingSubmit = async () => {
         try {

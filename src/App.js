@@ -14,29 +14,27 @@ const App = observer(() => {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                if (user.token) {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    // Пытаемся проверить токен на сервере
                     const userData = await check();
                     user.setUser(userData);
                     user.setIsAuth(true);
+                } else {
+                    // Если токена нет, но в сторе остались данные — чистим
+                    user.setUser({});
+                    user.setIsAuth(false);
                 }
             } catch (e) {
                 console.error('Auth check error:', e);
-                user.setToken(null); // удаляем невалидный токен
+                user.setUser({});
+                user.setIsAuth(false);
             } finally {
                 setLoading(false);
             }
         };
 
         checkAuth();
-
-        // Не обязательно, но полезно для обновления токена
-        const interval = setInterval(() => {
-            if (user.token) {
-                check().catch(() => user.setToken(null));
-            }
-        }, 600000); // 10 мин
-
-        return () => clearInterval(interval);
     }, [user]);
 
     if (loading) {

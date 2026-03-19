@@ -40,10 +40,11 @@ export const check = async () => {
         const token = localStorage.getItem('token');
         if (!token) throw new Error('Токен отсутствует');
 
-        const response = await $host.get('api/user/auth');
-        const newToken = response.data.token;
+        const response = await $host.get('api/user/auth', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
 
-        // Обновляем токен
+        const newToken = response.data.token;
         localStorage.setItem('token', newToken);
         return jwtDecode(newToken);
     } catch (e) {

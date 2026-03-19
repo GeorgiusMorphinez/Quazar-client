@@ -1,49 +1,55 @@
-import { makeAutoObservable } from "mobx";
-import { jwtDecode } from 'jwt-decode';
+import {makeAutoObservable} from "mobx";
 
 export default class UserStore {
     constructor() {
         this._isAuth = false;
         this._user = {};
-        this._token = localStorage.getItem('token') || null;
-        if (this._token) {
+        makeAutoObservable(this);
+
+        // При создании стора пытаемся восстановить пользователя из localStorage
+        this.loadUserFromStorage();
+    }
+
+    loadUserFromStorage() {
+        const token = localStorage.getItem('token');
+        const userData = localStorage.getItem('user');
+        if (token && userData) {
             try {
-                const decoded = jwtDecode(this._token);
-                this._user = decoded;
+                this._user = JSON.parse(userData);
                 this._isAuth = true;
             } catch (e) {
-                localStorage.removeItem('token');
+                this.clearStorage();
             }
         }
-        makeAutoObservable(this);
+    }
+
+    saveUserToStorage(user) {
+        localStorage.setItem('user', JSON.stringify(user));
+    }
+
+    clearStorage() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
     }
 
     setIsAuth(bool) {
         this._isAuth = bool;
+        if (!bool) this.clearStorage();
     }
 
     setUser(user) {
         this._user = user;
-    }
-
-    setToken(token) {
-        this._token = token;
-        if (token) {
-            localStorage.setItem('token', token);
+        if (user && Object.keys(user).length > 0) {
+            this.saveUserToStorage(user);
         } else {
-            localStorage.removeItem('token');
+            this.clearStorage();
         }
     }
 
     get isAuth() {
         return this._isAuth;
     }
-
     get user() {
         return this._user;
-    }
-
-    get token() {
-        return this._token;
     }
 }

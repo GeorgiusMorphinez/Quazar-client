@@ -9,9 +9,6 @@ import OrderStore from "./store/OrderStore"; // Новый
 
 export const Context = createContext(null);
 
-// Очистка localStorage при запуске (для тестирования)
-localStorage.removeItem('token');
-
 const root = createRoot(document.getElementById('root'));
 
 root.render(

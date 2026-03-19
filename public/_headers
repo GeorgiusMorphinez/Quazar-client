@@ -1,0 +1,24 @@
+/*
+  X-Content-Type-Options: nosniff
+  Content-Type: text/html; charset=utf-8
+
+/*.js
+  Content-Type: application/javascript
+
+/*.css
+  Content-Type: text/css
+
+/*.json
+  Content-Type: application/json
+
+/*.png
+  Content-Type: image/png
+
+/*.jpg
+  Content-Type: image/jpeg
+
+/*.svg
+  Content-Type: image/svg+xml
+
+/*.ico
+  Content-Type: image/x-icon

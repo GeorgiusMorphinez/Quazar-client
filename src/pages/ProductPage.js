@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext, useCallback} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button, Container, Row, Col, Image, Spinner } from 'react-bootstrap';
 import { fetchOneProduct } from '../http/productAPI';
@@ -7,6 +7,12 @@ import { Context } from '../index';
 import { observer } from 'mobx-react-lite';
 import EditProduct from '../components/modals/EditProduct';
 
+// Вспомогательная функция для URL изображения
+const getImageUrl = (img) => {
+    if (!img) return '';
+    if (img.startsWith('http')) return img;
+    return `${process.env.REACT_APP_API_URL}/static/${img}`;
+};
 
 const ProductPage = observer(() => {
     const { user } = useContext(Context);
@@ -22,22 +28,28 @@ const ProductPage = observer(() => {
     const [editShow, setEditShow] = useState(false);
     const { id } = useParams();
 
-    const loadProduct = useCallback(async () => {
+    const loadProduct = async () => {
         try {
             setLoading(true);
             setError(null);
             const data = await fetchOneProduct(id);
             setProduct(data);
+            // Если пользователь авторизован, проверим его оценку
+            if (user.isAuth && data.ratings) {
+                const userRating = data.ratings.find(r => r.user_id === user.user.id)?.rate;
+                setSelectedRating(userRating || 0);
+            }
         } catch (e) {
+            console.error('Load error:', e);
             setError('Ошибка загрузки данных');
         } finally {
             setLoading(false);
         }
-    }, [id]);
+    };
 
     useEffect(() => {
         loadProduct();
-    }, [loadProduct]);
+    }, [id, user]);
 
     const handleRatingSubmit = async () => {
         try {
@@ -73,7 +85,7 @@ const ProductPage = observer(() => {
                     <Image
                         width={300}
                         height={300}
-                        src={`${process.env.REACT_APP_API_URL}/static/${product.img}`}
+                        src={getImageUrl(product.img)}
                         thumbnail
                         alt={product.name}
                     />

@@ -4,7 +4,7 @@ import AppRouter from "./components/AppRouter";
 import NavBar from "./components/NavBar";
 import { observer } from "mobx-react-lite";
 import { Context } from "./index";
-import { check } from "./http/userAPI"; // Измените на check вместо refreshToken
+import { check } from "./http/userAPI";
 import { Spinner } from "react-bootstrap";
 
 const App = observer(() => {
@@ -14,14 +14,14 @@ const App = observer(() => {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const token = localStorage.getItem('token');
-                if (token) {
+                if (user.token) {
                     const userData = await check();
                     user.setUser(userData);
                     user.setIsAuth(true);
                 }
             } catch (e) {
                 console.error('Auth check error:', e);
+                user.setToken(null); // удаляем невалидный токен
             } finally {
                 setLoading(false);
             }
@@ -29,10 +29,10 @@ const App = observer(() => {
 
         checkAuth();
 
-        // Интервал для обновления токена
+        // Не обязательно, но полезно для обновления токена
         const interval = setInterval(() => {
-            if (localStorage.getItem('token')) {
-                check().catch(() => localStorage.removeItem('token'));
+            if (user.token) {
+                check().catch(() => user.setToken(null));
             }
         }, 600000); // 10 мин
 

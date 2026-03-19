@@ -6,10 +6,21 @@ import { fetchBasket, removeFromBasket } from '../http/basketAPI';
 import { useNavigate } from 'react-router-dom';
 import { SHOP_ROUTE } from '../utils/consts';
 import { $authHost } from "../http";
-import { fetchOrders } from '../http/orderAPI'; // Новый импорт
+import { fetchOrders } from '../http/orderAPI';
+
+// Вспомогательная функция для получения URL изображения
+const getImageUrl = (product) => {
+    if (!product || !product.img) return '';
+    // Если уже полный URL (например, из Supabase), используем его
+    if (product.img.startsWith('http')) {
+        return product.img;
+    }
+    // Иначе формируем путь к локальному static на бэкенде
+    return `${process.env.REACT_APP_API_URL}/static/${product.img}`;
+};
 
 const Basket = observer(() => {
-    const { user, basket, order } = useContext(Context); // Добавлен order
+    const { user, basket, order } = useContext(Context);
     const navigate = useNavigate();
     const [checkoutMode, setCheckoutMode] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -86,7 +97,7 @@ const Basket = observer(() => {
             });
 
             basket.setBasket({ basketItems: [] });
-            await fetchOrders().then(data => order.setOrders(data)); // Обновление заказов после покупки
+            await fetchOrders().then(data => order.setOrders(data));
 
             alert(data.message);
             navigate(SHOP_ROUTE);
@@ -116,7 +127,7 @@ const Basket = observer(() => {
                                         <Row className="align-items-center">
                                             <Col md={3}>
                                                 <Image
-                                                    src={`${process.env.REACT_APP_API_URL}/static/${item.basketProduct?.img || ''}`}
+                                                    src={getImageUrl(item.basketProduct)}
                                                     alt={item.basketProduct?.name || 'No name'}
                                                     style={{ width: '100px' }}
                                                     thumbnail

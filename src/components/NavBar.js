@@ -28,7 +28,7 @@ const NavBar = observer(() => {
     return (
         <Navbar bg="dark" variant="dark">
             <Container>
-                <Link to={SHOP_ROUTE} style={{ color: 'white', textDecoration: 'none' }}>КупиИгру</Link>
+                <Link to={SHOP_ROUTE} style={{ color: 'white', textDecoration: 'none' }}>Quazar</Link>
                 {user.isAuth ?
                     <Nav className="ml-auto" style={{ color: 'white' }}>
                         {user.user.role === 'ADMIN' &&

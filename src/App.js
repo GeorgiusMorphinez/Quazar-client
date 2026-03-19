@@ -15,25 +15,25 @@ const App = observer(() => {
         const checkAuth = async () => {
             try {
                 const token = localStorage.getItem('token');
+                console.log('App: token =', token);
                 if (token) {
-                    // Пытаемся проверить токен на сервере
                     const userData = await check();
+                    console.log('App: check OK', userData);
                     user.setUser(userData);
                     user.setIsAuth(true);
                 } else {
-                    // Если токена нет, но в сторе остались данные — чистим
+                    console.log('App: no token, setting user empty');
                     user.setUser({});
                     user.setIsAuth(false);
                 }
             } catch (e) {
-                console.error('Auth check error:', e);
+                console.error('App: check error', e);
                 user.setUser({});
                 user.setIsAuth(false);
             } finally {
                 setLoading(false);
             }
         };
-
         checkAuth();
     }, [user]);
 

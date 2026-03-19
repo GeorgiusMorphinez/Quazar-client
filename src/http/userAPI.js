@@ -38,16 +38,18 @@ export const login = async (email, password) => {
 export const check = async () => {
     try {
         const token = localStorage.getItem('token');
+        console.log('check: token from storage =', token);
         if (!token) throw new Error('Токен отсутствует');
 
         const response = await $host.get('api/user/auth', {
             headers: { Authorization: `Bearer ${token}` }
         });
-
+        console.log('check: response', response.data);
         const newToken = response.data.token;
         localStorage.setItem('token', newToken);
         return jwtDecode(newToken);
     } catch (e) {
+        console.error('check error', e);
         localStorage.removeItem('token');
         throw e;
     }

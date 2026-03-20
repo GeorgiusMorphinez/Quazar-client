@@ -6,6 +6,8 @@ import Auth from "./pages/Auth";
 import GamePage from "./pages/GamePage";
 import ProductPage from "./pages/ProductPage";
 import Orders from "./pages/Orders"; // Новый импорт
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 export const authRoutes = [
     {
@@ -42,5 +44,13 @@ export const publicRoutes = [
     {
         path: PRODUCT_ROUTE + '/:id',
         Component: ProductPage
+    },
+    {
+        path: "/forgot-password",
+        Component: ForgotPassword,
+    },
+    {
+        path: "/reset-password/:token",
+        Component: ResetPassword,
     }
 ]

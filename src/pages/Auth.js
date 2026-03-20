@@ -85,6 +85,9 @@ const Auth = observer(() => {
                         >
                             {loading ? 'Загрузка...' : isLogin ? 'Войти' : 'Регистрация'}
                         </Button>
+                        <div className="text-center mt-2">
+                            <NavLink to="/forgot-password">Забыли пароль?</NavLink>
+                        </div>
                     </Row>
                 </Form>
             </Card>

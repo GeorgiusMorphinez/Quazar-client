@@ -14,10 +14,16 @@ const ForgotPassword = () => {
         setLoading(true);
         setError('');
         try {
-            await $host.post('/api/user/forgot-password', { email });
+            console.log('Sending request to:', `${process.env.REACT_APP_API_URL}/api/user/forgot-password`);
+            const response = await $host.post('/api/user/forgot-password', { email });
+            console.log('Response:', response);
             setSuccess(true);
         } catch (e) {
-            setError(e.response?.data?.message || 'Ошибка отправки запроса');
+            console.error('Full error object:', e);
+            console.error('Response data:', e.response?.data);
+            console.error('Response status:', e.response?.status);
+            console.error('Response headers:', e.response?.headers);
+            setError(e.response?.data?.message || e.message || 'Ошибка отправки запроса');
         } finally {
             setLoading(false);
         }

@@ -13,9 +13,8 @@ const Download = () => {
         }
     }, []);
 
-    // Ссылки на файлы (замените на свои реальные URL)
-    const windowsUrl = 'https://ваш-хостинг/QuazarLauncherSetup.exe';
-    const androidUrl = 'https://ваш-хостинг/app-release.apk';
+    const windowsUrl = 'https://github.com/GeorgiusMorphinez/Quazar-launcher/releases/download/v1.0.0/QuazarLauncher-x86_64-1.0.0+1-Installer.exe';
+    const androidUrl = 'https://github.com/GeorgiusMorphinez/Quazar-launcher/releases/download/v1.0.0/app-release.apk';
 
     if (isInWebView) {
         return (

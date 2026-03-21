@@ -27,6 +27,7 @@ const Footer = () => {
                             <li><a href="/basket" className="text-white text-decoration-none">Корзина</a></li>
                             <li><a href="/orders" className="text-white text-decoration-none">Заказы</a></li>
                             <li><a href="/support" className="text-white text-decoration-none">Поддержка</a></li>
+                            <li><a href="/download" className="text-white text-decoration-none">Скачать лаунчер</a></li>
                         </ul>
                     </Col>
                 </Row>

@@ -9,6 +9,7 @@ import Orders from "./pages/Orders"; // Новый импорт
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Support from "./pages/Support";
+import Download from "./pages/Download";
 
 export const authRoutes = [
     {
@@ -57,5 +58,9 @@ export const publicRoutes = [
     {
         path: "/support",
         Component: Support,
+    },
+    {
+        path: "/download",
+        Component: Download,
     },
 ]

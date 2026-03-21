@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Card, Row, Col, Button, Alert } from 'react-bootstrap';
-import QRCode from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 
 const Download = () => {
     const [isInWebView, setIsInWebView] = useState(false);
 
     useEffect(() => {
-        // Проверяем, открыта ли страница внутри лаунчера (по наличию специфичного user-agent)
         const ua = navigator.userAgent.toLowerCase();
         if (ua.includes('quazar') || ua.includes('webview') || ua.includes('wv')) {
             setIsInWebView(true);
         }
     }, []);
 
-    const windowsUrl = 'https://github.com/GeorgiusMorphinez/Quazar-launcher/releases/download/v1.0.0/QuazarLauncher-x86_64-1.0.0+1-Installer.exe';
-    const androidUrl = 'https://github.com/GeorgiusMorphinez/Quazar-launcher/releases/download/v1.0.0/app-release.apk';
+    const windowsUrl = 'https://ваш-хостинг/QuazarLauncherSetup.exe';
+    const androidUrl = 'https://ваш-хостинг/app-release.apk';
 
     if (isInWebView) {
         return (
@@ -38,12 +37,7 @@ const Download = () => {
                             <Card.Text>
                                 Скачайте установщик для Windows и запустите его.
                             </Card.Text>
-                            <Button
-                                variant="primary"
-                                href={windowsUrl}
-                                download
-                                size="lg"
-                            >
+                            <Button variant="primary" href={windowsUrl} download size="lg">
                                 Скачать .exe
                             </Button>
                         </Card.Body>
@@ -57,14 +51,9 @@ const Download = () => {
                                 Отсканируйте QR-код или нажмите кнопку, чтобы скачать APK.
                             </Card.Text>
                             <div className="d-flex justify-content-center mb-3">
-                                <QRCode value={androidUrl} size={150} />
+                                <QRCodeSVG value={androidUrl} size={150} />
                             </div>
-                            <Button
-                                variant="success"
-                                href={androidUrl}
-                                download
-                                size="lg"
-                            >
+                            <Button variant="success" href={androidUrl} download size="lg">
                                 Скачать APK
                             </Button>
                         </Card.Body>

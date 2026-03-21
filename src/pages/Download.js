@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Card, Row, Col, Button, Alert } from 'react-bootstrap';
-import QRCode from 'qrcode.react';
+import { QRCode } from 'qrcode.react';
 
 const Download = () => {
     const [isInWebView, setIsInWebView] = useState(false);

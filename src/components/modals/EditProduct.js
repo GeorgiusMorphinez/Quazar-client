@@ -28,6 +28,8 @@ const EditProduct = ({ show, onHide, productId }) => {
                     product.setSelectedType(data.productType);
                     if (data.genre) game.setSelectedGenre(data.genre);
                     if (data.publisher) game.setSelectedPublisher(data.publisher);
+                    const onlineGamesData = await fetchOnlineGames();
+                    game.setOnlineGames(onlineGamesData);
                     if (data.subscription) {
                         setSpecificData({
                             platform_id: data.subscription.platform_id,
@@ -39,6 +41,10 @@ const EditProduct = ({ show, onHide, productId }) => {
                             additional_info: data.additional_info || ''
                         });
                         setQuantity(data.availableAccounts || 0);
+                    } else if (data.product_type_id === 1) {
+                        setSpecificData({
+                            is_online: data.is_online || false
+                        });
                     }
                 } catch (e) {
                     setError('Ошибка загрузки данных товара');
@@ -46,7 +52,7 @@ const EditProduct = ({ show, onHide, productId }) => {
             };
             loadProduct();
         }
-    }, [productId, product, game]);
+    }, [productId]);
 
     useEffect(() => {
         fetchProductTypes().then(data => product.setTypes(data));
@@ -86,6 +92,9 @@ const EditProduct = ({ show, onHide, productId }) => {
             const dataToSend = { ...specificData };
             if (product.selectedType.id === 2 || product.selectedType.id === 3) {
                 dataToSend.quantity = quantity;
+            }
+            if (product.selectedType.id === 1) {
+                dataToSend.is_online = specificData.is_online; // уже есть
             }
             formData.append('specificData', JSON.stringify(dataToSend));
 

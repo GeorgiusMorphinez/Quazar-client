@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";
 import { fetchPlatforms } from "../../http/platformAPI";
-import { fetchProductTypes, createProduct, fetchGenres, fetchPublishers } from "../../http/productAPI";
+import { fetchProductTypes, createProduct, fetchGenres, fetchPublishers, fetchOnlineGames } from "../../http/productAPI";
 
 const CreateProduct = ({ show, onHide }) => {
     const { product, game } = useContext(Context);
@@ -21,7 +21,8 @@ const CreateProduct = ({ show, onHide }) => {
         fetchGenres().then(data => game.setGenres(data)).catch(e => console.error(e));
         fetchPublishers().then(data => game.setPublishers(data)).catch(e => console.error(e));
         fetchPlatforms().then(data => setPlatforms(data)).catch(e => console.error(e));
-    }, [product, game]);
+        fetchOnlineGames().then(data => game.setOnlineGames(data)).catch(e => console.error(e));
+        }, [product, game]);
 
     const handleSpecificDataChange = (key, value) => {
         setSpecificData(prev => ({
@@ -72,10 +73,8 @@ const CreateProduct = ({ show, onHide }) => {
                 dataToSend.quantity = quantity;
             }
             formData.append('specificData', JSON.stringify(dataToSend));
-
             formData.append('img', file);
 
-            // Debug: Log formData contents
             for (let [key, value] of formData.entries()) {
                 console.log(key, value);
             }
@@ -92,6 +91,7 @@ const CreateProduct = ({ show, onHide }) => {
             product.setSelectedType(null);
             game.setSelectedGenre(null);
             game.setSelectedPublisher(null);
+            setSpecificData({});
 
         } catch (e) {
             setError(e.response?.data?.message || e.message);

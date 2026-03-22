@@ -68,9 +68,12 @@ export const fetchPublishers = async () => {
 };
 
 export const fetchOnlineGames = async () => {
-    // Получаем товары типа "ключ" (игры) с признаком is_online = true
     const { data } = await $host.get('/api/product', {
-        params: { productTypeId: 1, isOnline: true, limit: 100 }
+        params: {
+            productTypeId: 1,
+            isOnline: true,
+            limit: 100
+        }
     });
     return data.rows;
 };

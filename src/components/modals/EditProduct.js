@@ -52,7 +52,7 @@ const EditProduct = ({ show, onHide, productId }) => {
             };
             loadProduct();
         }
-    }, [productId]);
+    }, [productId, game]);
 
     useEffect(() => {
         fetchProductTypes().then(data => product.setTypes(data));

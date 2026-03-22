@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Context } from "../index";
 import { Button, Container, Nav, Navbar } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import { ADMIN_ROUTE, LOGIN_ROUTE, SHOP_ROUTE, ORDERS_ROUTE } from "../utils/consts";
+import {ADMIN_ROUTE, LOGIN_ROUTE, SHOP_ROUTE, ORDERS_ROUTE, LIBRARY_ROUTE} from "../utils/consts";
 import { observer } from "mobx-react-lite";
 import { BASKET_ROUTE } from "../utils/consts";
 import { $authHost } from "../http";

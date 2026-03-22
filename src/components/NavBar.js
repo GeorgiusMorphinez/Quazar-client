@@ -60,6 +60,13 @@ const NavBar = observer(() => {
                         >
                             📜 Заказы
                         </Button>
+                        <Button
+                            variant="outline-light"
+                            onClick={() => navigate(LIBRARY_ROUTE)}
+                            className="ml-2"
+                        >
+                            📚 Библиотека
+                        </Button>
                     </Nav>
                     :
                     <Nav className="ml-auto" style={{ color: 'white' }}>

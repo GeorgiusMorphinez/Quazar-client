@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Container, Button, Form, Alert } from 'react-bootstrap';
 import { $authHost } from '../http';
-//import { observer } from 'mobx-react-lite';
 import { SHOP_ROUTE } from '../utils/consts';
 import { useNavigate } from 'react-router-dom';
-//import CreateGame from '../components/modals/CreateGame'; // Removed unused import
 import CreateGenre from '../components/modals/CreateGenre';
 import CreatePublisher from '../components/modals/CreatePublisher';
 import CreateProduct from '../components/modals/CreateProduct';

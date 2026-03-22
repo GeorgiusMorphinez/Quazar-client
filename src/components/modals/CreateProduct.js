@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";
-import {fetchGenres, fetchPublishers} from "../../http/gameAPI";
 import { fetchPlatforms } from "../../http/platformAPI";
 import { fetchProductTypes, createProduct } from "../../http/productAPI";
+import { fetchGenres, fetchPublishers } from "../../http/productAPI";
 
 const CreateProduct = ({ show, onHide }) => {
     const { product, game } = useContext(Context);
@@ -18,19 +18,11 @@ const CreateProduct = ({ show, onHide }) => {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        fetchProductTypes()
-            .then(data => product.setTypes(data))
-            .catch(e => console.error('Ошибка загрузки типов:', e));
-
-        fetchGenres()
-            .then(data => product.setGenres(data))
-            .catch(e => console.error('Ошибка загрузки жанров:', e));
-
-        fetchPublishers()
-            .then(data => product.setPublishers(data))
-            .catch(e => console.error('Ошибка загрузки издателей:', e));
-        fetchPlatforms().then(data => setPlatforms(data));
-    }, [product]);
+        fetchProductTypes().then(data => product.setTypes(data)).catch(e => console.error(e));
+        fetchGenres().then(data => game.setGenres(data)).catch(e => console.error(e));
+        fetchPublishers().then(data => game.setPublishers(data)).catch(e => console.error(e));
+        fetchPlatforms().then(data => setPlatforms(data)).catch(e => console.error(e));
+    }, [product, game]);
 
     const handleSpecificDataChange = (key, value) => {
         setSpecificData(prev => ({
@@ -99,8 +91,8 @@ const CreateProduct = ({ show, onHide }) => {
             setQuantity(1);
             setSpecificData({});
             product.setSelectedType(null);
-            product.setSelectedGenre(null);
-            product.setSelectedPublisher(null);
+            game.setSelectedGenre(null);
+            game.setSelectedPublisher(null);
 
         } catch (e) {
             setError(e.response?.data?.message || e.message);

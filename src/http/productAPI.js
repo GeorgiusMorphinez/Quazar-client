@@ -56,3 +56,21 @@ export const deleteProduct = async (id) => {
     const { data } = await $authHost.delete(`/api/product/${id}`);
     return data;
 };
+
+export const fetchGenres = async () => {
+    const { data } = await $host.get('/api/genre');
+    return data;
+};
+
+export const fetchPublishers = async () => {
+    const { data } = await $host.get('/api/publisher');
+    return data;
+};
+
+export const fetchOnlineGames = async () => {
+    // Получаем товары типа "ключ" (игры) с признаком is_online = true
+    const { data } = await $host.get('/api/product', {
+        params: { productTypeId: 1, isOnline: true, limit: 100 }
+    });
+    return data.rows;
+};

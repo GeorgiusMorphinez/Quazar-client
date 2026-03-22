@@ -1,25 +1,21 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button, Image, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { Context } from '../index';
-import { observer } from 'mobx-react-lite';
-import { fetchLibrary } from '../http/libraryAPI';
+import { $authHost } from '../http';
 
-const Library = observer(() => {
+const Library = () => {
     const { user } = useContext(Context);
     const [games, setGames] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
 
     useEffect(() => {
         if (user.isAuth) {
-            fetchLibrary()
-                .then(data => setGames(data))
-                .catch(e => setError(e.message))
+            $authHost.get('/api/library')
+                .then(response => setGames(response.data))
+                .catch(e => console.error(e))
                 .finally(() => setLoading(false));
-        } else {
-            setLoading(false);
         }
-    }, [user.isAuth]);
+    }, [user]);
 
     const handleLaunch = (game) => {
         alert(`Демо-версия. Запуск игры "${game.name}" пока не реализован.`);
@@ -28,42 +24,48 @@ const Library = observer(() => {
     if (!user.isAuth) {
         return (
             <Container className="mt-5 text-center">
-                <Alert variant="info">Войдите в аккаунт, чтобы просмотреть библиотеку.</Alert>
+                <h3>Пожалуйста, войдите в аккаунт, чтобы увидеть библиотеку.</h3>
             </Container>
         );
     }
 
-    if (loading) return <Container className="mt-5 text-center">Загрузка...</Container>;
-    if (error) return <Container className="mt-5 text-center text-danger">{error}</Container>;
+    if (loading) {
+        return <Container className="mt-5 text-center">Загрузка...</Container>;
+    }
+
+    if (games.length === 0) {
+        return (
+            <Container className="mt-5 text-center">
+                <h3>Ваша библиотека пуста.</h3>
+                <p>Купите игры, чтобы они появились здесь.</p>
+            </Container>
+        );
+    }
 
     return (
         <Container className="mt-4">
-            <h2 className="mb-4">Моя библиотека</h2>
-            {games.length === 0 ? (
-                <Alert variant="secondary">У вас пока нет игр. Посетите магазин, чтобы купить.</Alert>
-            ) : (
-                <Row>
-                    {games.map(game => (
-                        <Col key={game.id} md={3} className="mb-4">
-                            <Card className="h-100">
-                                <Image
-                                    variant="top"
-                                    src={game.img?.startsWith('http') ? game.img : `${process.env.REACT_APP_API_URL}/static/${game.img}`}
-                                    style={{ height: '180px', objectFit: 'cover' }}
-                                />
-                                <Card.Body>
-                                    <Card.Title>{game.name}</Card.Title>
-                                    <Button variant="primary" onClick={() => handleLaunch(game)}>
-                                        Запустить
-                                    </Button>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    ))}
-                </Row>
-            )}
+            <h2>Моя библиотека</h2>
+            <Row>
+                {games.map(entry => (
+                    <Col md={3} key={entry.id} className="mb-4">
+                        <Card>
+                            <Card.Img
+                                variant="top"
+                                src={entry.product.img?.startsWith('http') ? entry.product.img : `${process.env.REACT_APP_API_URL}/static/${entry.product.img}`}
+                                style={{ height: '180px', objectFit: 'cover' }}
+                            />
+                            <Card.Body>
+                                <Card.Title>{entry.product.name}</Card.Title>
+                                <Button variant="primary" onClick={() => handleLaunch(entry.product)}>
+                                    Запустить
+                                </Button>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                ))}
+            </Row>
         </Container>
     );
-});
+};
 
 export default Library;

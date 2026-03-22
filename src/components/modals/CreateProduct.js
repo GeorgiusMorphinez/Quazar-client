@@ -2,8 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";
 import { fetchPlatforms } from "../../http/platformAPI";
-import { fetchProductTypes, createProduct } from "../../http/productAPI";
-import { fetchGenres, fetchPublishers } from "../../http/productAPI";
+import { fetchProductTypes, createProduct, fetchGenres, fetchPublishers } from "../../http/productAPI";
 
 const CreateProduct = ({ show, onHide }) => {
     const { product, game } = useContext(Context);

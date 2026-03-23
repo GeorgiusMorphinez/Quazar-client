@@ -9,16 +9,13 @@ const Library = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const platform = urlParams.get('platform');
-
-        // Если параметр platform не равен 'desktop', перенаправляем на страницу загрузки
-        if (platform !== 'desktop') {
+        // Проверяем, запущено ли приложение в WebView (лаунчере)
+        const isWebView = /WebView|wv|Quazar/.test(navigator.userAgent);
+        if (!isWebView) {
             navigate('/download');
             return;
         }
 
-        // Иначе загружаем библиотеку
         const fetchLibrary = async () => {
             try {
                 const { data } = await $authHost.get('/api/library');
@@ -36,7 +33,7 @@ const Library = () => {
     }, [navigate]);
 
     const handleRun = (game) => {
-        alert(`Демо-версия: запуск игры "${game.name}" пока не поддерживается.`);
+        alert(`Демо-версия: запуск "${game.name}" пока не поддерживается.`);
     };
 
     if (loading) return <div>Загрузка...</div>;

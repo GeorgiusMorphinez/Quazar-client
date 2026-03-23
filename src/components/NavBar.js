@@ -62,7 +62,7 @@ const NavBar = observer(() => {
                         </Button>
                         <Button
                             variant="outline-light"
-                            onClick={() => navigate(LIBRARY_ROUTE)}
+                            onClick={() => navigate('/library')}
                             className="ml-2"
                         >
                             📚 Библиотека

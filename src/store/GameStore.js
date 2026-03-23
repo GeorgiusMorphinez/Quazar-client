@@ -2,9 +2,9 @@ import { makeAutoObservable } from "mobx";
 
 export default class GameStore {
     constructor() {
-        this._genres = []
+        this._tags = []
         this._publishers = []
-        this._selectedGenre = null
+        this._selectedTag = null
         this._selectedPublisher = null
         this._platforms = [];
         this._selectedPlatform = null;
@@ -12,16 +12,16 @@ export default class GameStore {
         makeAutoObservable(this)
     }
 
-    setGenres(genres) {
-        this._genres = genres;
+    setTags(tags) {
+        this._tags = tags;
     }
 
     setPublishers(publishers) {
         this._publishers = publishers;
     }
 
-    setSelectedGenre(genre) {
-        this._selectedGenre = genre;
+    setSelectedTag(tag) {
+        this._selectedTag = tag;
     }
 
     setSelectedPublisher(publisher) {
@@ -35,16 +35,16 @@ export default class GameStore {
         this._onlineGames = games;
     }
 
-    get genres() {
-        return this._genres;
+    get tags() {
+        return this._tags;
     }
 
     get publishers() {
         return this._publishers;
     }
 
-    get selectedGenre() {
-        return this._selectedGenre;
+    get selectedTag() {
+        return this._selectedTag;
     }
 
     get selectedPublisher() {

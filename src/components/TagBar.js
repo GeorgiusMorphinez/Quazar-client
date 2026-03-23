@@ -3,31 +3,31 @@ import {observer} from "mobx-react-lite";
 import {Context} from "../index";
 import {ListGroup} from "react-bootstrap";
 
-const GenreBar = observer( () => {
+const TagBar = observer( () => {
     const { game } = useContext(Context); // Используем game контекст вместо product
 
     return (
         <ListGroup>
             <ListGroup.Item
                 style={{cursor: "pointer", fontWeight: 'bold'}}
-                active={game.selectedGenre === null}
-                onClick={() => game.setSelectedGenre(null)}
+                active={game.selectedTag === null}
+                onClick={() => game.setSelectedTag(null)}
             >
-                Все жанры
+                Все тэги
             </ListGroup.Item>
 
-            {game.genres.map(genre =>
+            {game.tags.map(tag =>
                 <ListGroup.Item
                     style={{cursor: "pointer"}}
-                    active={genre.id === game.selectedGenre?.id}
-                    onClick={() => game.setSelectedGenre(genre)}
-                    key={genre.id}
+                    active={tag.id === game.selectedTag?.id}
+                    onClick={() => game.setSelectedTag(tag)}
+                    key={tag.id}
                 >
-                    {genre.name}
+                    {tag.name}
                 </ListGroup.Item>
             )}
         </ListGroup>
     );
 });
 
-export default GenreBar;
+export default TagBar;

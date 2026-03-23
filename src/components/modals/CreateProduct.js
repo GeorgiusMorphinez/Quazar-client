@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";
 import { fetchPlatforms } from "../../http/platformAPI";
-import { fetchProductTypes, createProduct, fetchGenres, fetchPublishers, fetchOnlineGames } from "../../http/productAPI";
+import { fetchProductTypes, createProduct, fetchTags, fetchPublishers, fetchOnlineGames } from "../../http/productAPI";
 
 const CreateProduct = ({ show, onHide }) => {
     const { product, game } = useContext(Context);
@@ -18,7 +18,7 @@ const CreateProduct = ({ show, onHide }) => {
 
     useEffect(() => {
         fetchProductTypes().then(data => product.setTypes(data)).catch(e => console.error(e));
-        fetchGenres().then(data => game.setGenres(data)).catch(e => console.error(e));
+        fetchTags().then(data => game.setTags(data)).catch(e => console.error(e));
         fetchPublishers().then(data => game.setPublishers(data)).catch(e => console.error(e));
         fetchPlatforms().then(data => setPlatforms(data)).catch(e => console.error(e));
         fetchOnlineGames().then(data => game.setOnlineGames(data)).catch(e => console.error(e));
@@ -46,8 +46,8 @@ const CreateProduct = ({ show, onHide }) => {
             if (!name.trim()) {
                 throw new Error('Введите название товара');
             }
-            if (price <= 0) {
-                throw new Error('Цена должна быть больше 0');
+            if (price < 0) {
+                throw new Error('Цена должна быть не меньше 0');
             }
             if (!file) {
                 throw new Error('Выберите изображение');
@@ -60,14 +60,13 @@ const CreateProduct = ({ show, onHide }) => {
             formData.append('productTypeId', String(product.selectedType.id));
             formData.append('quantity', String(quantity));
 
-            if (game.selectedGenre) {
-                formData.append('genreId', String(game.selectedGenre.id));
+            if (game.selectedTag) {
+                formData.append('tagId', String(game.selectedTag.id));
             }
             if (game.selectedPublisher) {
                 formData.append('publisherId', String(game.selectedPublisher.id));
             }
 
-            // Добавляем специфичные данные
             const dataToSend = { ...specificData };
             if (product.selectedType.id === 2 || product.selectedType.id === 3) {
                 dataToSend.quantity = quantity;
@@ -75,9 +74,6 @@ const CreateProduct = ({ show, onHide }) => {
             formData.append('specificData', JSON.stringify(dataToSend));
             formData.append('img', file);
 
-            for (let [key, value] of formData.entries()) {
-                console.log(key, value);
-            }
 
             await createProduct(formData);
             onHide();
@@ -89,10 +85,8 @@ const CreateProduct = ({ show, onHide }) => {
             setQuantity(1);
             setSpecificData({});
             product.setSelectedType(null);
-            game.setSelectedGenre(null);
+            game.setSelectedTag(null);
             game.setSelectedPublisher(null);
-            setSpecificData({});
-
         } catch (e) {
             setError(e.response?.data?.message || e.message);
         } finally {
@@ -104,23 +98,23 @@ const CreateProduct = ({ show, onHide }) => {
         if (!product.selectedType) return null;
 
         switch (product.selectedType.id) {
-            case 1: // Ключ (игра)
+            case 1:
                 return (
                     <>
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {game.selectedGenre?.name || "Выберите жанр"}
+                                {game.selectedTag?.name || "Выберите тэг"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedGenre(null)}>
-                                    Без жанра
+                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>
+                                    Без тэга
                                 </Dropdown.Item>
-                                {game.genres.map(genre => (
+                                {game.tags.map(tag => (
                                     <Dropdown.Item
-                                        key={genre.id}
-                                        onClick={() => game.setSelectedGenre(genre)}
+                                        key={tag.id}
+                                        onClick={() => game.setSelectedTag(tag)}
                                     >
-                                        {genre.name}
+                                        {tag.name}
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>
@@ -224,6 +218,28 @@ const CreateProduct = ({ show, onHide }) => {
                                 ))}
                             </Dropdown.Menu>
                         </Dropdown>
+                    </>
+                );
+            case 4: // Приложение
+                return (
+                    <>
+                        <Dropdown className="mb-3">
+                            <Dropdown.Toggle variant="outline-secondary">
+                                {game.selectedTag?.name || "Выберите тег"}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>
+                                    Без тега
+                                </Dropdown.Item>
+                                {game.tags.map(tag => (
+                                    <Dropdown.Item key={tag.id} onClick={() => game.setSelectedTag(tag)}>
+                                        {tag.name}
+                                    </Dropdown.Item>
+                                ))}
+                            </Dropdown.Menu>
+                        </Dropdown>
+                        {/* Для приложений можно добавить дополнительные поля (версия, разработчик) */}
+                        {/* Но пока оставим только тег */}
                     </>
                 );
 

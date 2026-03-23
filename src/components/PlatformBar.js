@@ -1,4 +1,3 @@
-// New file: client/src/components/PlatformBar.js (Similar to GenreBar)
 import React, { useContext } from 'react';
 import { observer } from "mobx-react-lite";
 import { Context } from "../index";

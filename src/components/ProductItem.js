@@ -7,12 +7,6 @@ import { LOGIN_ROUTE } from "../utils/consts";
 import { $authHost } from "../http";
 import star from '../assets/star.png';
 
-const getImageUrl = (img) => {
-    if (!img) return '';
-    if (img.startsWith('http')) return img;
-    return `${process.env.REACT_APP_API_URL}/static/${img}`;
-};
-
 const ProductItem = observer(({ product }) => {
     const navigate = useNavigate();
     const { user, basket } = useContext(Context);
@@ -21,9 +15,10 @@ const ProductItem = observer(({ product }) => {
 
     const getTypeBadge = (typeId) => {
         switch (typeId) {
-            case 1: return { text: '🎮 Ключ', variant: 'primary' };
+            case 1: return { text: '🎮 Игра', variant: 'primary' };
             case 2: return { text: '🔄 Подписка', variant: 'success' };
             case 3: return { text: '👤 Аккаунт', variant: 'warning' };
+            case 4: return { text: '🖥️ Приложение', variant: 'info' };
             default: return { text: '📦 Товар', variant: 'secondary' };
         }
     };
@@ -47,6 +42,7 @@ const ProductItem = observer(({ product }) => {
             return;
         }
 
+        // Проверяем доступность только для аккаунтов
         if (product.product_type_id === 3 && product.availableAccounts === 0) {
             alert('Аккаунты временно отсутствуют в наличии');
             return;
@@ -77,7 +73,7 @@ const ProductItem = observer(({ product }) => {
                     <Image
                         width="100%"
                         height={200}
-                        src={getImageUrl(product.img)}
+                        src={product.img?.startsWith('http') ? product.img : `${process.env.REACT_APP_API_URL}/static/${product.img}`}
                         alt={product.name}
                         onClick={() => navigate(`/product/${product.id}`)}
                         style={{ objectFit: 'cover' }}
@@ -101,8 +97,7 @@ const ProductItem = observer(({ product }) => {
                     <Card.Text className="flex-grow-1">
                         {product.description && product.description.length > 100
                             ? `${product.description.substring(0, 100)}...`
-                            : product.description
-                        }
+                            : product.description}
                     </Card.Text>
 
                     {product.product_type_id === 3 && (

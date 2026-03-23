@@ -3,7 +3,7 @@ import { Container, Button, Form, Alert } from 'react-bootstrap';
 import { $authHost } from '../http';
 import { SHOP_ROUTE } from '../utils/consts';
 import { useNavigate } from 'react-router-dom';
-import CreateGenre from '../components/modals/CreateGenre';
+import CreateTag from '../components/modals/CreateTag';
 import CreatePublisher from '../components/modals/CreatePublisher';
 import CreateProduct from '../components/modals/CreateProduct';
 import CreatePlatform from '../components/modals/CreatePlatform';
@@ -19,7 +19,7 @@ const Admin = () => {
     const [isGenerating, setIsGenerating] = useState(false);
 
     // Состояния для модальных окон
-    const [genreVisible, setGenreVisible] = useState(false);
+    const [tagVisible, setTagVisible] = useState(false);
     const [publisherVisible, setPublisherVisible] = useState(false);
     const [productVisible, setProductVisible] = useState(false);
     const [platformVisible, setPlatformVisible] = useState(false);
@@ -27,7 +27,7 @@ const Admin = () => {
     const reportTypes = [
         { value: 'visits', label: 'Посещения пользователей' },
         { value: 'sales', label: 'Продажи игр' },
-        { value: 'genres', label: 'Популярные жанры' },
+        { value: 'tags', label: 'Популярные тэги' },
         { value: 'carts', label: 'Неоформленные корзины' }
     ];
 
@@ -96,9 +96,9 @@ const Admin = () => {
                 <Button
                     variant="outline-dark"
                     className="mt-4 p-2"
-                    onClick={() => setGenreVisible(true)}
+                    onClick={() => setTagVisible(true)}
                 >
-                    Добавить жанр
+                    Добавить тэг
                 </Button>
                 <Button
                     variant="outline-dark"
@@ -178,7 +178,7 @@ const Admin = () => {
 
             {/* Модальные окна */}
             <CreateProduct show={productVisible} onHide={() => setProductVisible(false)} />
-            <CreateGenre show={genreVisible} onHide={() => setGenreVisible(false)} />
+            <CreateTag show={tagVisible} onHide={() => setTagVisible(false)} />
             <CreatePublisher show={publisherVisible} onHide={() => setPublisherVisible(false)} />
             <CreatePlatform show={platformVisible} onHide={() => setPlatformVisible(false)} /> {/* New modal */}
         </Container>

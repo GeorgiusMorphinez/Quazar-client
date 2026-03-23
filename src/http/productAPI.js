@@ -14,7 +14,7 @@ export const fetchProducts = async (params = {}) => {
         const { data } = await $host.get('/api/product', {
             params: {
                 productTypeId: params.productTypeId,
-                genreId: params.genreId,
+                tagId: params.tagId,
                 publisherId: params.publisherId,
                 platformId: params.platformId, // Добавлен
                 page: params.page,
@@ -57,8 +57,8 @@ export const deleteProduct = async (id) => {
     return data;
 };
 
-export const fetchGenres = async () => {
-    const { data } = await $host.get('/api/genre');
+export const fetchTags = async () => {
+    const { data } = await $host.get('/api/tag');
     return data;
 };
 

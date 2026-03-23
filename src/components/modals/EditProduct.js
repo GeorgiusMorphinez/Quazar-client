@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";
 import { fetchPlatforms } from "../../http/platformAPI";
-import { fetchProductTypes, updateProduct, deleteProduct, fetchOneProduct, fetchGenres, fetchPublishers, fetchOnlineGames } from "../../http/productAPI";
+import { fetchProductTypes, updateProduct, deleteProduct, fetchOneProduct, fetchTags, fetchPublishers, fetchOnlineGames } from "../../http/productAPI";
 
 const EditProduct = ({ show, onHide, productId }) => {
     const { product, game } = useContext(Context);
@@ -26,7 +26,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                     setPrice(data.price);
                     setDescription(data.description);
                     product.setSelectedType(data.productType);
-                    if (data.genre) game.setSelectedGenre(data.genre);
+                    if (data.tag) game.setSelectedTag(data.tag);
                     if (data.publisher) game.setSelectedPublisher(data.publisher);
                     const onlineGamesData = await fetchOnlineGames();
                     game.setOnlineGames(onlineGamesData);
@@ -56,7 +56,7 @@ const EditProduct = ({ show, onHide, productId }) => {
 
     useEffect(() => {
         fetchProductTypes().then(data => product.setTypes(data));
-        fetchGenres().then(data => game.setGenres(data));
+        fetchTags().then(data => game.setTags(data));
         fetchPublishers().then(data => game.setPublishers(data));
         fetchPlatforms().then(data => setPlatforms(data));
     }, [product, game]);
@@ -81,8 +81,8 @@ const EditProduct = ({ show, onHide, productId }) => {
             formData.append('productTypeId', String(product.selectedType.id));
             formData.append('quantity', String(quantity));
 
-            if (game.selectedGenre) {
-                formData.append('genreId', String(game.selectedGenre.id));
+            if (game.selectedTag) {
+                formData.append('tagId', String(game.selectedTag.id));
             }
             if (game.selectedPublisher) {
                 formData.append('publisherId', String(game.selectedPublisher.id));
@@ -129,18 +129,18 @@ const EditProduct = ({ show, onHide, productId }) => {
                     <>
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {game.selectedGenre?.name || "Выберите жанр"}
+                                {game.selectedTag?.name || "Выберите тэг"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedGenre(null)}>
-                                    Без жанра
+                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>
+                                    Без тэга
                                 </Dropdown.Item>
-                                {game.genres.map(genre => (
+                                {game.tags.map(tag => (
                                     <Dropdown.Item
-                                        key={genre.id}
-                                        onClick={() => game.setSelectedGenre(genre)}
+                                        key={tag.id}
+                                        onClick={() => game.setSelectedTag(tag)}
                                     >
-                                        {genre.name}
+                                        {tag.name}
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>
@@ -246,6 +246,29 @@ const EditProduct = ({ show, onHide, productId }) => {
                     </Dropdown>
             </>
             );
+
+            case 4: // Приложение
+                return (
+                    <>
+                        <Dropdown className="mb-3">
+                            <Dropdown.Toggle variant="outline-secondary">
+                                {game.selectedTag?.name || "Выберите тег"}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>
+                                    Без тега
+                                </Dropdown.Item>
+                                {game.tags.map(tag => (
+                                    <Dropdown.Item key={tag.id} onClick={() => game.setSelectedTag(tag)}>
+                                        {tag.name}
+                                    </Dropdown.Item>
+                                ))}
+                            </Dropdown.Menu>
+                        </Dropdown>
+                        {/* Для приложений можно добавить дополнительные поля (версия, разработчик) */}
+                        {/* Но пока оставим только тег */}
+                    </>
+                );
 
             default:
                 return null;

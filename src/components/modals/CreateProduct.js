@@ -22,13 +22,10 @@ const CreateProduct = ({ show, onHide }) => {
         fetchPublishers().then(data => game.setPublishers(data)).catch(e => console.error(e));
         fetchPlatforms().then(data => setPlatforms(data)).catch(e => console.error(e));
         fetchOnlineGames().then(data => game.setOnlineGames(data)).catch(e => console.error(e));
-        }, [product, game]);
+    }, [product, game]);
 
     const handleSpecificDataChange = (key, value) => {
-        setSpecificData(prev => ({
-            ...prev,
-            [key]: value
-        }));
+        setSpecificData(prev => ({ ...prev, [key]: value }));
     };
 
     const selectFile = e => {
@@ -38,20 +35,11 @@ const CreateProduct = ({ show, onHide }) => {
     const addProduct = async () => {
         setLoading(true);
         setError('');
-
         try {
-            if (!product.selectedType) {
-                throw new Error('Выберите тип товара');
-            }
-            if (!name.trim()) {
-                throw new Error('Введите название товара');
-            }
-            if (price < 0) {
-                throw new Error('Цена должна быть не меньше 0');
-            }
-            if (!file) {
-                throw new Error('Выберите изображение');
-            }
+            if (!product.selectedType) throw new Error('Выберите тип товара');
+            if (!name.trim()) throw new Error('Введите название товара');
+            if (price <= 0) throw new Error('Цена должна быть больше 0');
+            if (!file) throw new Error('Выберите изображение');
 
             const formData = new FormData();
             formData.append('name', name.trim());
@@ -74,10 +62,9 @@ const CreateProduct = ({ show, onHide }) => {
             formData.append('specificData', JSON.stringify(dataToSend));
             formData.append('img', file);
 
-
             await createProduct(formData);
             onHide();
-            // Сбрасываем форму
+            // Сброс
             setName("");
             setPrice(0);
             setDescription("");
@@ -98,22 +85,19 @@ const CreateProduct = ({ show, onHide }) => {
         if (!product.selectedType) return null;
 
         switch (product.selectedType.id) {
-            case 1:
+            case 1: // Игра
                 return (
                     <>
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {game.selectedTag?.name || "Выберите тэг"}
+                                {game.selectedTag?.name || "Выберите тег"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 <Dropdown.Item onClick={() => game.setSelectedTag(null)}>
-                                    Без тэга
+                                    Без тега
                                 </Dropdown.Item>
                                 {game.tags.map(tag => (
-                                    <Dropdown.Item
-                                        key={tag.id}
-                                        onClick={() => game.setSelectedTag(tag)}
-                                    >
+                                    <Dropdown.Item key={tag.id} onClick={() => game.setSelectedTag(tag)}>
                                         {tag.name}
                                     </Dropdown.Item>
                                 ))}
@@ -129,10 +113,7 @@ const CreateProduct = ({ show, onHide }) => {
                                     Без издателя
                                 </Dropdown.Item>
                                 {game.publishers.map(publisher => (
-                                    <Dropdown.Item
-                                        key={publisher.id}
-                                        onClick={() => game.setSelectedPublisher(publisher)}
-                                    >
+                                    <Dropdown.Item key={publisher.id} onClick={() => game.setSelectedPublisher(publisher)}>
                                         {publisher.name}
                                     </Dropdown.Item>
                                 ))}
@@ -147,79 +128,6 @@ const CreateProduct = ({ show, onHide }) => {
                     </>
                 );
 
-            case 2: // Подписка
-                return (
-                    <>
-                    <Dropdown className="mb-3">
-                        <Dropdown.Toggle variant="outline-secondary">
-                            {specificData.platform_id ? platforms.find(p => p.id === specificData.platform_id)?.name || "Выберите платформу" : "Выберите платформу"}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                        {platforms.map(platform => (
-                            <Dropdown.Item
-                                key={platform.id}
-                                onClick={() => handleSpecificDataChange('platform_id', platform.id)}
-                            >
-                                {platform.name}
-                            </Dropdown.Item>
-                        ))}
-                    </Dropdown.Menu>
-                    </Dropdown>
-                <Form.Control
-                    className="mb-3"
-                    type="number"
-                    placeholder="Длительность в днях"
-                    value={specificData.duration_days || ''}
-                    onChange={e => handleSpecificDataChange('duration_days', e.target.value)}
-                    min="1"
-                />
-                <Form.Control
-                    className="mb-3"
-                    type="number"
-                    placeholder="Количество кодов"
-                    value={quantity}
-                    onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                    min="1"
-                />
-            </>
-            );
-
-            case 3: // Аккаунт
-                return (
-                    <>
-                        <Form.Control
-                            className="mb-3"
-                            as="textarea"
-                            placeholder="Дополнительная информация об аккаунте"
-                            value={specificData.additional_info || ''}
-                            onChange={e => handleSpecificDataChange('additional_info', e.target.value)}
-                            rows={3}
-                        />
-                        <Form.Control
-                            className="mb-3"
-                            type="number"
-                            placeholder="Количество аккаунтов"
-                            value={quantity}
-                            onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                            min="1"
-                        />
-                        <Dropdown className="mb-3">
-                            <Dropdown.Toggle variant="outline-secondary">
-                                {specificData.game_id ? game.onlineGames.find(g => g.id === specificData.game_id)?.name || "Выберите игру" : "Выберите игру"}
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                {game.onlineGames.map(g => (
-                                    <Dropdown.Item
-                                        key={g.id}
-                                        onClick={() => handleSpecificDataChange('game_id', g.id)}
-                                    >
-                                        {g.name}
-                                    </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </>
-                );
             case 4:
                 return (
                     <>
@@ -257,6 +165,74 @@ const CreateProduct = ({ show, onHide }) => {
                     </>
                 );
 
+            case 2: // Подписка
+                return (
+                    <>
+                        <Dropdown className="mb-3">
+                            <Dropdown.Toggle variant="outline-secondary">
+                                {specificData.platform_id ? platforms.find(p => p.id === specificData.platform_id)?.name || "Выберите платформу" : "Выберите платформу"}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                {platforms.map(platform => (
+                                    <Dropdown.Item key={platform.id} onClick={() => handleSpecificDataChange('platform_id', platform.id)}>
+                                        {platform.name}
+                                    </Dropdown.Item>
+                                ))}
+                            </Dropdown.Menu>
+                        </Dropdown>
+                        <Form.Control
+                            className="mb-3"
+                            type="number"
+                            placeholder="Длительность в днях"
+                            value={specificData.duration_days || ''}
+                            onChange={e => handleSpecificDataChange('duration_days', e.target.value)}
+                            min="1"
+                        />
+                        <Form.Control
+                            className="mb-3"
+                            type="number"
+                            placeholder="Количество кодов"
+                            value={quantity}
+                            onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                            min="1"
+                        />
+                    </>
+                );
+
+            case 3: // Аккаунт
+                return (
+                    <>
+                        <Form.Control
+                            className="mb-3"
+                            as="textarea"
+                            placeholder="Дополнительная информация об аккаунте"
+                            value={specificData.additional_info || ''}
+                            onChange={e => handleSpecificDataChange('additional_info', e.target.value)}
+                            rows={3}
+                        />
+                        <Form.Control
+                            className="mb-3"
+                            type="number"
+                            placeholder="Количество аккаунтов"
+                            value={quantity}
+                            onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                            min="1"
+                        />
+                        <Dropdown className="mb-3">
+                            <Dropdown.Toggle variant="outline-secondary">
+                                {specificData.game_id ? game.onlineGames.find(g => g.id === specificData.game_id)?.name || "Выберите игру" : "Выберите игру"}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                {game.onlineGames.map(g => (
+                                    <Dropdown.Item key={g.id} onClick={() => handleSpecificDataChange('game_id', g.id)}>
+                                        {g.name}
+                                    </Dropdown.Item>
+                                ))}
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </>
+                );
+
             default:
                 return null;
         }
@@ -269,7 +245,6 @@ const CreateProduct = ({ show, onHide }) => {
             </Modal.Header>
             <Modal.Body>
                 {error && <Alert variant="danger">{error}</Alert>}
-
                 <Form>
                     <Dropdown className="mb-3">
                         <Dropdown.Toggle variant="outline-primary">
@@ -277,10 +252,7 @@ const CreateProduct = ({ show, onHide }) => {
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
                             {product.types.map(type => (
-                                <Dropdown.Item
-                                    key={type.id}
-                                    onClick={() => product.setSelectedType(type)}
-                                >
+                                <Dropdown.Item key={type.id} onClick={() => product.setSelectedType(type)}>
                                     {type.name}
                                 </Dropdown.Item>
                             ))}
@@ -324,11 +296,7 @@ const CreateProduct = ({ show, onHide }) => {
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="outline-danger" onClick={onHide}>Закрыть</Button>
-                <Button
-                    variant="outline-success"
-                    onClick={addProduct}
-                    disabled={loading || !product.selectedType}
-                >
+                <Button variant="outline-success" onClick={addProduct} disabled={loading || !product.selectedType}>
                     {loading ? 'Добавление...' : 'Добавить'}
                 </Button>
             </Modal.Footer>

@@ -8,10 +8,10 @@ const TypeBar = observer(() => {
 
     const getTypeIcon = (typeId) => {
         switch (typeId) {
-            case 1: return '🎮'; // Игры
-            case 2: return '🔄'; // Подписки
-            case 3: return '👤'; // Аккаунты
-            case 4: return '🖥️'; // Приложения
+            case 1: return '🎮'; // Игра
+            case 2: return '🔄'; // Подписка
+            case 3: return '👤'; // Аккаунт
+            case 4: return '🖥️'; // Приложение
             default: return '📦';
         }
     };

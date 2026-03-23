@@ -42,7 +42,6 @@ const ProductItem = observer(({ product }) => {
             return;
         }
 
-        // Проверяем доступность только для аккаунтов
         if (product.product_type_id === 3 && product.availableAccounts === 0) {
             alert('Аккаунты временно отсутствуют в наличии');
             return;

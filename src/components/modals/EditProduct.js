@@ -250,7 +250,7 @@ const EditProduct = ({ show, onHide, productId }) => {
             case 4:
                 return (
                     <>
-                    <Dropdown className="mb-3">
+                        <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
                                 {game.selectedTag?.name || "Выберите тег"}
                             </Dropdown.Toggle>
@@ -264,9 +264,9 @@ const EditProduct = ({ show, onHide, productId }) => {
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>
-                    </Dropdown>
+                        </Dropdown>
 
-                    <Dropdown className="mb-3">
+                        <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
                                 {game.selectedPublisher?.name || "Выберите издателя"}
                             </Dropdown.Toggle>
@@ -280,9 +280,9 @@ const EditProduct = ({ show, onHide, productId }) => {
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>
-                    </Dropdown>
-            </>
-            );
+                        </Dropdown>
+                    </>
+                );
 
             default:
                 return null;

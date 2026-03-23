@@ -11,9 +11,9 @@ const Library = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Проверяем, запущено ли приложение в WebView (лаунчере)
-        const isWebView = /WebView|wv|Quazar/.test(navigator.userAgent);
-        if (!isWebView) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const platform = urlParams.get('platform');
+        if (platform !== 'desktop') {
             navigate('/download');
             return;
         }

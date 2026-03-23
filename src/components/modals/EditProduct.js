@@ -247,7 +247,7 @@ const EditProduct = ({ show, onHide, productId }) => {
             </>
             );
 
-            case 4: // Приложение
+            case 4:
                 return (
                     <>
                         <Dropdown className="mb-3">
@@ -265,8 +265,22 @@ const EditProduct = ({ show, onHide, productId }) => {
                                 ))}
                             </Dropdown.Menu>
                         </Dropdown>
-                        {/* Для приложений можно добавить дополнительные поля (версия, разработчик) */}
-                        {/* Но пока оставим только тег */}
+
+                        <Dropdown className="mb-3">
+                            <Dropdown.Toggle variant="outline-secondary">
+                                {game.selectedPublisher?.name || "Выберите издателя"}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Item onClick={() => game.setSelectedPublisher(null)}>
+                                    Без издателя
+                                </Dropdown.Item>
+                                {game.publishers.map(publisher => (
+                                    <Dropdown.Item key={publisher.id} onClick={() => game.setSelectedPublisher(publisher)}>
+                                        {publisher.name}
+                                    </Dropdown.Item>
+                                ))}
+                            </Dropdown.Menu>
+                        </Dropdown>
                     </>
                 );
 

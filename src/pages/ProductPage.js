@@ -1,5 +1,3 @@
-// client/src/pages/ProductPage.js
-
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button, Container, Row, Col, Image, Spinner, Card } from 'react-bootstrap';
@@ -140,6 +138,7 @@ const ProductPage = observer(() => {
                 </Col>
             </Row>
 
+            {/* Блок премиум-аккаунтов */}
             {product.product_type_id === 1 && premiumAccounts.length > 0 && (
                 <Row className="mt-5">
                     <Col>

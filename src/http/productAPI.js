@@ -2,25 +2,14 @@ import { $authHost, $host } from "./index";
 
 export const createProduct = async (formData) => {
     const { data } = await $authHost.post('/api/product', formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
+        headers: { 'Content-Type': 'multipart/form-data' }
     });
     return data;
-}
+};
 
 export const fetchProducts = async (params = {}) => {
     try {
-        const { data } = await $host.get('/api/product', {
-            params: {
-                productTypeId: params.productTypeId,
-                tagId: params.tagId,
-                publisherId: params.publisherId,
-                platformId: params.platformId, // Добавлен
-                page: params.page,
-                limit: params.limit
-            }
-        });
+        const { data } = await $host.get('/api/product', { params });
         return data;
     } catch (e) {
         console.error('Products fetch error:', e);
@@ -45,9 +34,7 @@ export const fetchOneProduct = async (id) => {
 
 export const updateProduct = async (id, formData) => {
     const { data } = await $authHost.put(`/api/product/${id}`, formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
+        headers: { 'Content-Type': 'multipart/form-data' }
     });
     return data;
 };
@@ -69,11 +56,7 @@ export const fetchPublishers = async () => {
 
 export const fetchOnlineGames = async () => {
     const { data } = await $host.get('/api/product', {
-        params: {
-            productTypeId: 1,
-            isOnline: true,
-            limit: 100
-        }
+        params: { productTypeId: 1, isOnline: true, limit: 100 }
     });
     return data.rows;
 };
@@ -82,4 +65,3 @@ export const fetchPremiumAccounts = async (gameId) => {
     const { data } = await $host.get(`/api/product/game/${gameId}/premium-accounts`);
     return data;
 };
-

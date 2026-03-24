@@ -59,10 +59,11 @@ const Shop = observer(() => {
         };
 
         loadData();
-    }, [product.page, product.selectedType, game.selectedTag, game.selectedPublisher, game.selectedPlatform, game.selectedGame, product, game]);
+    }, [product.page, product.selectedType, game.selectedTag, game.selectedPublisher, game.selectedPlatform, product, game]);
 
     const showCategories = product.selectedType?.id === 1 || product.selectedType?.id === 4;
     const showPlatforms = product.selectedType?.id === 2;
+    const showGames = product.selectedType?.id === 3;
     const showAll = !product.selectedType;
 
     return (
@@ -78,6 +79,9 @@ const Shop = observer(() => {
                     )}
                     {!showAll && showPlatforms && (
                         <div className="mt-3"><PlatformBar /></div>
+                    )}
+                    {!showAll && showGames && (
+                        <div className="mt-3"><GameBar /></div>
                     )}
                 </Col>
                 <Col md={9}>

@@ -9,6 +9,7 @@ export default class GameStore {
         this._platforms = [];
         this._selectedPlatform = null;
         this._onlineGames = [];
+        this._selectedGame = null;
         makeAutoObservable(this)
     }
 
@@ -35,6 +36,10 @@ export default class GameStore {
         this._onlineGames = games;
     }
 
+    setSelectedGame(game) {
+        this._selectedGame = game;
+    }
+
     get tags() {
         return this._tags;
     }
@@ -56,5 +61,9 @@ export default class GameStore {
 
     get onlineGames() {
         return this._onlineGames;
+    }
+
+    get selectedGame() {
+        return this._selectedGame;
     }
 }

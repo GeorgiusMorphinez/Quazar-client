@@ -54,21 +54,21 @@ const CreateProduct = ({ show, onHide }) => {
             if (game.selectedPublisher) {
                 formData.append('publisherId', String(game.selectedPublisher.id));
             }
-            if (game.selectedGame) {
-                formData.append('gameId', String(game.selectedGame.id));
-            }
-
 
             const dataToSend = { ...specificData };
             if (product.selectedType.id === 2 || product.selectedType.id === 3) {
                 dataToSend.quantity = quantity;
+            }
+            // Для аккаунтов добавляем game_id
+            if (product.selectedType.id === 3 && game.selectedGame) {
+                dataToSend.game_id = game.selectedGame.id;
             }
             formData.append('specificData', JSON.stringify(dataToSend));
             formData.append('img', file);
 
             await createProduct(formData);
             onHide();
-            // Сброс
+            // Сброс формы
             setName("");
             setPrice(0);
             setDescription("");
@@ -78,6 +78,7 @@ const CreateProduct = ({ show, onHide }) => {
             product.setSelectedType(null);
             game.setSelectedTag(null);
             game.setSelectedPublisher(null);
+            game.setSelectedGame(null);
         } catch (e) {
             setError(e.response?.data?.message || e.message);
         } finally {
@@ -132,7 +133,7 @@ const CreateProduct = ({ show, onHide }) => {
                     </>
                 );
 
-            case 4:
+            case 4: // Приложение
                 return (
                     <>
                         <Dropdown className="mb-3">
@@ -224,11 +225,11 @@ const CreateProduct = ({ show, onHide }) => {
                         />
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {specificData.game_id ? game.onlineGames.find(g => g.id === specificData.game_id)?.name || "Выберите игру" : "Выберите игру"}
+                                {game.selectedGame?.name || "Выберите игру"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 {game.onlineGames.map(g => (
-                                    <Dropdown.Item key={g.id} onClick={() => handleSpecificDataChange('game_id', g.id)}>
+                                    <Dropdown.Item key={g.id} onClick={() => game.setSelectedGame(g)}>
                                         {g.name}
                                     </Dropdown.Item>
                                 ))}

@@ -63,7 +63,6 @@ const Shop = observer(() => {
 
     const showCategories = product.selectedType?.id === 1 || product.selectedType?.id === 4;
     const showPlatforms = product.selectedType?.id === 2;
-    const showGames = product.selectedType?.id === 3;
     const showAll = !product.selectedType;
 
     return (

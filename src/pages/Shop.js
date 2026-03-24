@@ -80,9 +80,6 @@ const Shop = observer(() => {
                     {!showAll && showPlatforms && (
                         <div className="mt-3"><PlatformBar /></div>
                     )}
-                    {!showAll && showGames && (
-                        <div className="mt-3"><GameBar /></div>
-                    )}
                 </Col>
                 <Col md={9}>
                     <ProductList />

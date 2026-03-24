@@ -9,7 +9,11 @@ export const createProduct = async (formData) => {
 
 export const fetchProducts = async (params = {}) => {
     try {
-        const { data } = await $host.get('/api/product', { params });
+        const queryParams = { ...params };
+        if (queryParams.excludeTypes && Array.isArray(queryParams.excludeTypes)) {
+            queryParams.excludeTypes = queryParams.excludeTypes.join(',');
+        }
+        const { data } = await $host.get('/api/product', { params: queryParams });
         return data;
     } catch (e) {
         console.error('Products fetch error:', e);

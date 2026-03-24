@@ -54,6 +54,9 @@ const CreateProduct = ({ show, onHide }) => {
             if (game.selectedPublisher) {
                 formData.append('publisherId', String(game.selectedPublisher.id));
             }
+            if (game.selectedGame) {
+                formData.append('gameId', String(game.selectedGame.id));
+            }
 
             const dataToSend = { ...specificData };
             if (product.selectedType.id === 2 || product.selectedType.id === 3) {

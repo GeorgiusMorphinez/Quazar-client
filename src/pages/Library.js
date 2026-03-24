@@ -11,9 +11,9 @@ const Library = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const platform = urlParams.get('platform');
-        if (platform !== 'desktop') {
+        // Проверяем User-Agent, чтобы определить, открыта ли страница в лаунчере
+        const isLauncher = /QuazarLauncher/.test(navigator.userAgent);
+        if (!isLauncher) {
             navigate('/download');
             return;
         }

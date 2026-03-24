@@ -33,10 +33,13 @@ const Shop = observer(() => {
                 const params = {
                     page: product.page,
                     limit: product.limit
-
                 };
 
-                if (product.selectedType) params.productTypeId = product.selectedType.id;
+                if (product.selectedType) {
+                    params.productTypeId = product.selectedType.id;
+                } else {
+                    params.excludeTypes = [3];
+                }
                 if (game.selectedTag) params.tagId = game.selectedTag.id;
                 if (game.selectedPublisher) params.publisherId = game.selectedPublisher.id;
                 if (game.selectedPlatform && product.selectedType?.id === 2) params.platformId = game.selectedPlatform.id;

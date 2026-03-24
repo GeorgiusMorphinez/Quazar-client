@@ -1,11 +1,14 @@
+// client/src/pages/ProductPage.js
+
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { Button, Container, Row, Col, Image, Spinner } from 'react-bootstrap';
-import { fetchOneProduct } from '../http/productAPI';
+import { Button, Container, Row, Col, Image, Spinner, Card } from 'react-bootstrap';
+import { fetchOneProduct, fetchPremiumAccounts } from '../http/productAPI';
 import { createRating } from '../http/ratingAPI';
 import { Context } from '../index';
 import { observer } from 'mobx-react-lite';
 import EditProduct from '../components/modals/EditProduct';
+import { $authHost } from '../http';
 
 const ProductPage = observer(() => {
     const { user } = useContext(Context);
@@ -13,8 +16,10 @@ const ProductPage = observer(() => {
         name: '',
         img: '',
         description: '',
-        rating: 0
+        rating: 0,
+        product_type_id: null
     });
+    const [premiumAccounts, setPremiumAccounts] = useState([]);
     const [selectedRating, setSelectedRating] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -27,6 +32,13 @@ const ProductPage = observer(() => {
             setError(null);
             const data = await fetchOneProduct(id);
             setProduct(data);
+
+            if (data.product_type_id === 1) {
+                const accounts = await fetchPremiumAccounts(data.id);
+                setPremiumAccounts(accounts);
+            } else {
+                setPremiumAccounts([]);
+            }
         } catch (e) {
             console.error('Load error:', e);
             setError('Ошибка загрузки данных');
@@ -47,6 +59,19 @@ const ProductPage = observer(() => {
             await loadProduct();
         } catch (e) {
             alert(e.response?.data?.message || 'Ошибка оценки');
+        }
+    };
+
+    const handleAddPremiumToBasket = async (accountId) => {
+        if (!user.isAuth) {
+            alert('Авторизуйтесь для покупки');
+            return;
+        }
+        try {
+            await $authHost.post('/api/basket/add', { product_id: accountId });
+            alert('Товар добавлен в корзину');
+        } catch (e) {
+            alert(e.response?.data?.message || 'Ошибка добавления в корзину');
         }
     };
 
@@ -74,15 +99,8 @@ const ProductPage = observer(() => {
         <Container className="mt-3">
             <Row>
                 <Col md={4}>
-                    <Image
-                        width={300}
-                        height={300}
-                        src={imageUrl}
-                        thumbnail
-                        alt={product.name}
-                    />
+                    <Image width={300} height={300} src={imageUrl} thumbnail alt={product.name} />
                 </Col>
-
                 <Col md={8}>
                     <h2>{product.name}</h2>
                     <p>{product.description}</p>
@@ -102,7 +120,6 @@ const ProductPage = observer(() => {
                                 </Button>
                             ))}
                         </div>
-
                         <Button
                             variant="success"
                             onClick={handleRatingSubmit}
@@ -110,27 +127,51 @@ const ProductPage = observer(() => {
                         >
                             {user.isAuth ? "Подтвердить оценку" : "Требуется авторизация"}
                         </Button>
-
                         <div className="mt-4">
                             <h5>Средний рейтинг: {product.rating}</h5>
                         </div>
 
-                        {product.product_type_id === 3 && product.linkedGame && (
-                            <p>Привязан к игре: {product.linkedGame.name}</p>
-                        )}
-
                         {user.user.role === 'ADMIN' && (
-                            <Button
-                                variant="outline-primary"
-                                className="mt-3"
-                                onClick={() => setEditShow(true)}
-                            >
+                            <Button variant="outline-primary" className="mt-3" onClick={() => setEditShow(true)}>
                                 🔧 Редактировать
                             </Button>
                         )}
                     </div>
                 </Col>
             </Row>
+
+            {product.product_type_id === 1 && premiumAccounts.length > 0 && (
+                <Row className="mt-5">
+                    <Col>
+                        <h3>Премиум-аккаунты</h3>
+                        <p>Дополнительные аккаунты с особыми привилегиями</p>
+                        <Row>
+                            {premiumAccounts.map(acc => (
+                                <Col md={4} key={acc.id} className="mb-3">
+                                    <Card>
+                                        <Card.Body>
+                                            <Card.Title>{acc.name}</Card.Title>
+                                            <Card.Text>
+                                                {acc.description}
+                                                {acc.additional_info && <small className="d-block text-muted mt-2">{acc.additional_info}</small>}
+                                                <strong className="d-block mt-2">{acc.price} руб.</strong>
+                                                <small>Доступно: {acc.availableCount}</small>
+                                            </Card.Text>
+                                            <Button
+                                                variant="primary"
+                                                onClick={() => handleAddPremiumToBasket(acc.id)}
+                                                disabled={acc.availableCount === 0}
+                                            >
+                                                {acc.availableCount > 0 ? 'Купить' : 'Нет в наличии'}
+                                            </Button>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                            ))}
+                        </Row>
+                    </Col>
+                </Row>
+            )}
 
             <EditProduct show={editShow} onHide={() => setEditShow(false)} productId={id} />
         </Container>

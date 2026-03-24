@@ -1,3 +1,4 @@
+// client/src/components/TypeBar.js
 import React, { useContext } from 'react';
 import { observer } from "mobx-react-lite";
 import { Context } from "../index";
@@ -28,18 +29,20 @@ const TypeBar = observer(() => {
                 Все товары
             </ListGroup.Item>
 
-            {product.types.map(type => (
-                <ListGroup.Item
-                    style={{ cursor: "pointer" }}
-                    active={type.id === product.selectedType?.id}
-                    onClick={() => product.setSelectedType(type)}
-                    key={type.id}
-                    className="d-flex align-items-center"
-                >
-                    <span className="me-2">{getTypeIcon(type.id)}</span>
-                    {type.name}
-                </ListGroup.Item>
-            ))}
+            {product.types
+                .filter(type => type.id !== 3) // исключаем аккаунты из общего каталога
+                .map(type => (
+                    <ListGroup.Item
+                        style={{ cursor: "pointer" }}
+                        active={type.id === product.selectedType?.id}
+                        onClick={() => product.setSelectedType(type)}
+                        key={type.id}
+                        className="d-flex align-items-center"
+                    >
+                        <span className="me-2">{getTypeIcon(type.id)}</span>
+                        {type.name}
+                    </ListGroup.Item>
+                ))}
         </ListGroup>
     );
 });

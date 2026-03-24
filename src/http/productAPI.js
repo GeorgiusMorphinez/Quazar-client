@@ -77,3 +77,9 @@ export const fetchOnlineGames = async () => {
     });
     return data.rows;
 };
+
+export const fetchPremiumAccounts = async (gameId) => {
+    const { data } = await $host.get(`/api/product/game/${gameId}/premium-accounts`);
+    return data;
+};
+

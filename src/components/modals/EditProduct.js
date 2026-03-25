@@ -34,6 +34,15 @@ const EditProduct = ({ show, onHide, productId }) => {
             const loadProduct = async () => {
                 try {
                     const data = await fetchOneProduct(productId);
+                    console.log('=== EDIT PRODUCT LOADED ===');
+                    console.log('Data:', data);
+                    console.log('product_type_id:', data.product_type_id);
+                    console.log('type object (from data.type):', data.type);
+                    console.log('tag object (from data.tag):', data.tag);
+                    console.log('publisher object (from data.publisher):', data.publisher);
+                    console.log('product.types length:', product.types.length);
+                    console.log('game.tags length:', game.tags.length);
+                    console.log('game.publishers length:', game.publishers.length);
                     setName(data.name);
                     setPrice(data.price);
                     setDescription(data.description);

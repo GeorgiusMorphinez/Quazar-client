@@ -17,34 +17,37 @@ const EditProduct = ({ show, onHide, productId }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // Загрузка общих данных (один раз)
+    // Загрузка общих данных (только при монтировании)
     useEffect(() => {
         fetchProductTypes().then(data => product.setTypes(data));
         fetchTags().then(data => game.setTags(data));
         fetchPublishers().then(data => game.setPublishers(data));
         fetchPlatforms().then(data => setPlatforms(data));
         fetchOnlineGames().then(data => game.setOnlineGames(data));
-    }, []);
+    }, []); // пустой массив, т.к. зависимости не меняются
 
     // Загрузка данных редактируемого товара
     useEffect(() => {
         if (productId && show) {
             const loadProduct = async () => {
                 try {
-                    // Сброс перед загрузкой
-                    setSpecificData({});
-                    setQuantity(1);
-                    setError('');
                     const data = await fetchOneProduct(productId);
+                    // Сбрасываем локальное состояние
                     setName(data.name);
                     setPrice(data.price);
                     setDescription(data.description);
+                    setFile(null);
+                    setError('');
+                    setLoading(false);
+
+                    // Устанавливаем тип товара в сторе
                     if (data.type) {
                         product.setSelectedType(data.type);
                     }
                     if (data.tag) game.setSelectedTag(data.tag);
                     if (data.publisher) game.setSelectedPublisher(data.publisher);
 
+                    // Специфичные данные
                     if (data.subscription) {
                         setSpecificData({
                             platform_id: data.subscription.platform_id,
@@ -61,8 +64,10 @@ const EditProduct = ({ show, onHide, productId }) => {
                         setSpecificData({
                             is_online: data.is_online || false
                         });
+                        setQuantity(1);
                     } else if (data.product_type_id === 4) {
                         setSpecificData({});
+                        setQuantity(1);
                     }
                 } catch (e) {
                     setError('Ошибка загрузки данных товара');
@@ -70,22 +75,7 @@ const EditProduct = ({ show, onHide, productId }) => {
             };
             loadProduct();
         }
-    }, [productId, show, product, game]);
-
-    // Сброс при закрытии
-    useEffect(() => {
-        if (!show) {
-            setName('');
-            setPrice(0);
-            setDescription('');
-            setFile(null);
-            setQuantity(1);
-            setSpecificData({});
-            product.setSelectedType(null);
-            game.setSelectedTag(null);
-            game.setSelectedPublisher(null);
-        }
-    }, [show, product, game]);
+    }, [productId, show, product, game]); // добавлены все зависимости
 
     const handleSpecificDataChange = (key, value) => {
         setSpecificData(prev => ({ ...prev, [key]: value }));
@@ -104,7 +94,7 @@ const EditProduct = ({ show, onHide, productId }) => {
             formData.append('name', name.trim());
             formData.append('price', String(price));
             formData.append('description', description);
-            // Не отправляем productTypeId, так как тип не меняется
+            // Тип товара не передаём – он не должен меняться
             if (product.selectedType.id === 2 || product.selectedType.id === 3) {
                 formData.append('quantity', String(quantity));
             }

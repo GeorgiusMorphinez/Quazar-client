@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";
-import { fetchGenres, fetchPublishers } from "../../http/productAPI";
+import { fetchTags, fetchPublishers } from "../../http/productAPI";
 import { fetchPlatforms } from "../../http/platformAPI";
 import { fetchProductTypes, updateProduct, deleteProduct, fetchOneProduct, fetchOnlineGames } from "../../http/productAPI";
 
@@ -20,7 +20,7 @@ const EditProduct = ({ show, onHide, productId }) => {
     // Загрузка общих данных
     useEffect(() => {
         fetchProductTypes().then(data => product.setTypes(data));
-        fetchGenres().then(data => game.setGenres(data));
+        fetchTags().then(data => game.setTags(data));
         fetchPublishers().then(data => game.setPublishers(data));
         fetchPlatforms().then(data => setPlatforms(data));
         fetchOnlineGames().then(data => game.setOnlineGames(data));
@@ -38,7 +38,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                     if (data.productType) {
                         product.setSelectedType(data.productType);
                     }
-                    if (data.genre) game.setSelectedGenre(data.genre);
+                    if (data.tag) game.setSelectedTag(data.tag);
                     if (data.publisher) game.setSelectedPublisher(data.publisher);
 
                     if (data.subscription) {
@@ -91,8 +91,8 @@ const EditProduct = ({ show, onHide, productId }) => {
                 formData.append('quantity', String(quantity));
             }
 
-            if (game.selectedGenre) {
-                formData.append('genreId', String(game.selectedGenre.id));
+            if (game.selectedTag) {
+                formData.append('tagId', String(game.selectedTag.id));
             }
             if (game.selectedPublisher) {
                 formData.append('publisherId', String(game.selectedPublisher.id));
@@ -135,13 +135,13 @@ const EditProduct = ({ show, onHide, productId }) => {
                     <>
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {game.selectedGenre?.name || "Выберите тег"}
+                                {game.selectedTag?.name || "Выберите тег"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedGenre(null)}>Без тега</Dropdown.Item>
-                                {game.genres.map(genre => (
-                                    <Dropdown.Item key={genre.id} onClick={() => game.setSelectedGenre(genre)}>
-                                        {genre.name}
+                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>Без тега</Dropdown.Item>
+                                {game.tags.map(tag => (
+                                    <Dropdown.Item key={tag.id} onClick={() => game.setSelectedTag(tag)}>
+                                        {tag.name}
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>
@@ -242,13 +242,13 @@ const EditProduct = ({ show, onHide, productId }) => {
                     <>
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {game.selectedGenre?.name || "Выберите тег"}
+                                {game.selectedTag?.name || "Выберите тег"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedGenre(null)}>Без тега</Dropdown.Item>
-                                {game.genres.map(genre => (
-                                    <Dropdown.Item key={genre.id} onClick={() => game.setSelectedGenre(genre)}>
-                                        {genre.name}
+                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>Без тега</Dropdown.Item>
+                                {game.tags.map(tag => (
+                                    <Dropdown.Item key={tag.id} onClick={() => game.setSelectedTag(tag)}>
+                                        {tag.name}
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>

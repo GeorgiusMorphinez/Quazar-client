@@ -15,7 +15,8 @@ const ProductPage = observer(() => {
         img: '',
         description: '',
         rating: 0,
-        product_type_id: null
+        product_type_id: null,
+        availableAccounts: 0
     });
     const [premiumAccounts, setPremiumAccounts] = useState([]);
     const [selectedRating, setSelectedRating] = useState(0);
@@ -60,13 +61,13 @@ const ProductPage = observer(() => {
         }
     };
 
-    const handleAddPremiumToBasket = async (accountId) => {
+    const handleAddToBasket = async (productId) => {
         if (!user.isAuth) {
             alert('Авторизуйтесь для покупки');
             return;
         }
         try {
-            await $authHost.post('/api/basket/add', { product_id: accountId });
+            await $authHost.post('/api/basket/add', { product_id: productId });
             alert('Товар добавлен в корзину');
         } catch (e) {
             alert(e.response?.data?.message || 'Ошибка добавления в корзину');
@@ -158,7 +159,7 @@ const ProductPage = observer(() => {
                                             </Card.Text>
                                             <Button
                                                 variant="primary"
-                                                onClick={() => handleAddPremiumToBasket(acc.id)}
+                                                onClick={() => handleAddToBasket(acc.id)}
                                                 disabled={acc.availableCount === 0}
                                             >
                                                 {acc.availableCount > 0 ? 'Купить' : 'Нет в наличии'}

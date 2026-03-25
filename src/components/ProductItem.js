@@ -18,7 +18,7 @@ const ProductItem = observer(({ product }) => {
         switch (typeId) {
             case 1: return { text: '🎮 Игра', variant: 'primary' };
             case 2: return { text: '🔄 Подписка', variant: 'success' };
-            case 3: return { text: '👤 Аккаунт', variant: 'warning' };
+            case 3: return { text: '👑 Премиум-аккаунт', variant: 'warning' };
             case 4: return { text: '🖥️ Приложение', variant: 'info' };
             default: return { text: '📦 Товар', variant: 'secondary' };
         }
@@ -34,7 +34,7 @@ const ProductItem = observer(({ product }) => {
     }, [user.isAuth, basket.basket, product.id]);
 
     const checkLibraryStatus = useCallback(async () => {
-        if (user.isAuth && product.product_type_id === 3) {
+        if (user.isAuth && (product.product_type_id === 1 || product.product_type_id === 4 || product.product_type_id === 3)) {
             try {
                 const { data } = await $authHost.get(`/api/library/check/${product.id}`);
                 setIsInLibrary(data.exists);
@@ -55,9 +55,9 @@ const ProductItem = observer(({ product }) => {
             return;
         }
 
-        // Для аккаунтов проверяем доступность
-        if (product.product_type_id === 3 && product.availableAccounts === 0) {
-            alert('Аккаунты временно отсутствуют в наличии');
+        // Если товар уже в библиотеке, не добавляем
+        if (isInLibrary) {
+            alert('Вы уже приобрели этот товар.');
             return;
         }
 
@@ -79,20 +79,15 @@ const ProductItem = observer(({ product }) => {
 
     const typeBadge = getTypeBadge(product.product_type_id);
 
-    // Определяем текст кнопки и её состояние
-    let buttonText = 'В корзину';
-    let disabled = loading || isInBasket || (product.product_type_id === 3 && product.availableAccounts === 0);
+    // Определяем, доступен ли товар для покупки
+    const isDisabled = loading || isInBasket || isInLibrary ||
+        (product.product_type_id === 3 && product.availableAccounts === 0);
 
-    if (isInLibrary && product.product_type_id === 3) {
-        buttonText = 'В библиотеке';
-        disabled = true;
-    } else if (isInBasket) {
-        buttonText = 'В корзине';
-        disabled = true;
-    } else if (product.product_type_id === 3 && product.availableAccounts === 0) {
-        buttonText = 'Нет в наличии';
-        disabled = true;
-    }
+    let buttonText = '';
+    if (isInLibrary) buttonText = 'В библиотеке';
+    else if (isInBasket) buttonText = 'В корзине';
+    else if (product.product_type_id === 3 && product.availableAccounts === 0) buttonText = 'Нет в наличии';
+    else buttonText = 'В корзину';
 
     return (
         <Col md={4} className="mt-3">
@@ -140,7 +135,7 @@ const ProductItem = observer(({ product }) => {
                                 variant={isInBasket ? "success" : "outline-dark"}
                                 size="sm"
                                 onClick={handleAddToBasket}
-                                disabled={disabled}
+                                disabled={isDisabled}
                                 className="flex-grow-1 me-2"
                             >
                                 {loading ? 'Добавление...' : buttonText}

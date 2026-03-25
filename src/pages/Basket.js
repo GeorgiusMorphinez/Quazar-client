@@ -11,11 +11,9 @@ import { fetchOrders } from '../http/orderAPI';
 // Вспомогательная функция для получения URL изображения
 const getImageUrl = (product) => {
     if (!product || !product.img) return '';
-    // Если уже полный URL (например, из Supabase), используем его
     if (product.img.startsWith('http')) {
         return product.img;
     }
-    // Иначе формируем путь к локальному static на бэкенде
     return `${process.env.REACT_APP_API_URL}/static/${product.img}`;
 };
 
@@ -87,7 +85,7 @@ const Basket = observer(() => {
             const items = basket.basket.basketItems?.map(item => ({
                 id: item.id,
                 product_id: item.product_id,
-                quantity: quantities[item.id] || item.quantity,
+                quantity: 1,
                 price: item.basketProduct.price
             })) || [];
 
@@ -138,17 +136,6 @@ const Basket = observer(() => {
                                                 <div className="text-danger fw-bold">
                                                     {item.basketProduct?.price || 0} руб.
                                                 </div>
-                                            </Col>
-                                            <Col md={3}>
-                                                <Form.Control
-                                                    type="number"
-                                                    min="1"
-                                                    value={quantities[item.id] || item.quantity}
-                                                    onChange={(e) =>
-                                                        handleQuantityChange(item.id, e.target.value)
-                                                    }
-                                                    style={{ width: '80px' }}
-                                                />
                                             </Col>
                                             <Col md={3} className="d-flex justify-content-end">
                                                 <Button

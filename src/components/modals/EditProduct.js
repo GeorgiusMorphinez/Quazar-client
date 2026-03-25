@@ -35,10 +35,10 @@ const EditProduct = ({ show, onHide, productId }) => {
                     setName(data.name);
                     setPrice(data.price);
                     setDescription(data.description);
-                    if (data.productType) {
-                        product.setSelectedType(data.productType);
+                    if (data.type) {
+                        product.setSelectedType(data.type);
                     }
-                    if (data.tag) game.setSelectedTag(data.tag);
+                    if (data.tag) game.setSelectedTag(data.tag); // если используете tag
                     if (data.publisher) game.setSelectedPublisher(data.publisher);
 
                     if (data.subscription) {
@@ -58,7 +58,6 @@ const EditProduct = ({ show, onHide, productId }) => {
                             is_online: data.is_online || false
                         });
                     } else if (data.product_type_id === 4) {
-                        // Для приложения не нужно специфичных данных, кроме тех, что уже есть
                         setSpecificData({});
                     }
                 } catch (e) {

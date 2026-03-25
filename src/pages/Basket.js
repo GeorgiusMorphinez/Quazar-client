@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Container, Card, Row, Col, Image, Button, Form, Alert } from 'react-bootstrap';
+import { Container, Card, Row, Col, Image, Button, Alert } from 'react-bootstrap';
 import { Context } from '../index';
 import { observer } from "mobx-react-lite";
 import { fetchBasket, removeFromBasket } from '../http/basketAPI';
@@ -50,6 +50,11 @@ const Basket = observer(() => {
         return cardParts.every(part => part.length === 4);
     };
 
+    const getImageUrl = (img) => {
+        if (!img) return '';
+        return img.startsWith('http') ? img : `${process.env.REACT_APP_API_URL}/static/${img}`;
+    };
+
     const handleCheckout = async () => {
         try {
             if (!validateCard()) {
@@ -60,7 +65,7 @@ const Basket = observer(() => {
             const items = basket.basket.basketItems?.map(item => ({
                 id: item.id,
                 product_id: item.product_id,
-                quantity: 1,
+                quantity: 1, // всегда 1
                 price: item.basketProduct.price
             })) || [];
 
@@ -80,13 +85,9 @@ const Basket = observer(() => {
         }
     };
 
-    const getImageUrl = (img) => {
-        if (!img) return '';
-        return img.startsWith('http') ? img : `${process.env.REACT_APP_API_URL}/static/${img}`;
-    };
-
+    // Вычисляем общую сумму, преобразуя цены в числа
     const total = basket.basket?.basketItems?.reduce((sum, item) => {
-        const price = item.basketProduct?.price || 0;
+        const price = parseFloat(item.basketProduct?.price) || 0;
         return sum + price;
     }, 0) || 0;
 
@@ -113,7 +114,7 @@ const Basket = observer(() => {
                                             <Col md={3}>
                                                 <h5>{item.basketProduct?.name || 'No name'}</h5>
                                                 <div className="text-danger fw-bold">
-                                                    {item.basketProduct?.price || 0} руб.
+                                                    {parseFloat(item.basketProduct?.price || 0).toFixed(2)} руб.
                                                 </div>
                                             </Col>
                                             <Col md={3}>

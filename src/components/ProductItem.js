@@ -11,6 +11,7 @@ const ProductItem = observer(({ product }) => {
     const navigate = useNavigate();
     const { user, basket } = useContext(Context);
     const [isInBasket, setIsInBasket] = useState(false);
+    const [isInLibrary, setIsInLibrary] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const getTypeBadge = (typeId) => {
@@ -32,9 +33,21 @@ const ProductItem = observer(({ product }) => {
         }
     }, [user.isAuth, basket.basket, product.id]);
 
+    const checkLibraryStatus = useCallback(async () => {
+        if (user.isAuth && product.product_type_id === 3) {
+            try {
+                const { data } = await $authHost.get(`/api/library/check/${product.id}`);
+                setIsInLibrary(data.exists);
+            } catch (e) {
+                console.error('Check library error:', e);
+            }
+        }
+    }, [user.isAuth, product.id, product.product_type_id]);
+
     useEffect(() => {
         checkBasketStatus();
-    }, [checkBasketStatus]);
+        checkLibraryStatus();
+    }, [checkBasketStatus, checkLibraryStatus]);
 
     const handleAddToBasket = async () => {
         if (!user.isAuth) {
@@ -42,6 +55,7 @@ const ProductItem = observer(({ product }) => {
             return;
         }
 
+        // Для аккаунтов проверяем доступность
         if (product.product_type_id === 3 && product.availableAccounts === 0) {
             alert('Аккаунты временно отсутствуют в наличии');
             return;
@@ -64,6 +78,21 @@ const ProductItem = observer(({ product }) => {
     };
 
     const typeBadge = getTypeBadge(product.product_type_id);
+
+    // Определяем текст кнопки и её состояние
+    let buttonText = 'В корзину';
+    let disabled = loading || isInBasket || (product.product_type_id === 3 && product.availableAccounts === 0);
+
+    if (isInLibrary && product.product_type_id === 3) {
+        buttonText = 'В библиотеке';
+        disabled = true;
+    } else if (isInBasket) {
+        buttonText = 'В корзине';
+        disabled = true;
+    } else if (product.product_type_id === 3 && product.availableAccounts === 0) {
+        buttonText = 'Нет в наличии';
+        disabled = true;
+    }
 
     return (
         <Col md={4} className="mt-3">
@@ -111,12 +140,10 @@ const ProductItem = observer(({ product }) => {
                                 variant={isInBasket ? "success" : "outline-dark"}
                                 size="sm"
                                 onClick={handleAddToBasket}
-                                disabled={loading || isInBasket || (product.product_type_id === 3 && product.availableAccounts === 0)}
+                                disabled={disabled}
                                 className="flex-grow-1 me-2"
                             >
-                                {loading ? 'Добавление...' :
-                                    isInBasket ? 'В корзине' :
-                                        (product.product_type_id === 3 && product.availableAccounts === 0) ? 'Нет в наличии' : 'В корзину'}
+                                {loading ? 'Добавление...' : buttonText}
                             </Button>
 
                             <div className="d-flex align-items-center">

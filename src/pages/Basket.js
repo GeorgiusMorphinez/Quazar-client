@@ -60,7 +60,7 @@ const Basket = observer(() => {
             const items = basket.basket.basketItems?.map(item => ({
                 id: item.id,
                 product_id: item.product_id,
-                quantity: 1,          // всегда один товар
+                quantity: 1,
                 price: item.basketProduct.price
             })) || [];
 
@@ -80,9 +80,14 @@ const Basket = observer(() => {
         }
     };
 
+    const getImageUrl = (img) => {
+        if (!img) return '';
+        return img.startsWith('http') ? img : `${process.env.REACT_APP_API_URL}/static/${img}`;
+    };
+
     const total = basket.basket?.basketItems?.reduce((sum, item) => {
         const price = item.basketProduct?.price || 0;
-        return sum + price; // количество всегда 1
+        return sum + price;
     }, 0) || 0;
 
     return (
@@ -99,7 +104,7 @@ const Basket = observer(() => {
                                         <Row className="align-items-center">
                                             <Col md={3}>
                                                 <Image
-                                                    src={`${process.env.REACT_APP_API_URL}/static/${item.basketProduct?.img || ''}`}
+                                                    src={getImageUrl(item.basketProduct?.img)}
                                                     alt={item.basketProduct?.name || 'No name'}
                                                     style={{ width: '100px' }}
                                                     thumbnail
@@ -129,7 +134,7 @@ const Basket = observer(() => {
                             ))}
 
                             <div className="d-flex justify-content-between align-items-center mt-4">
-                                <h4>Итого: {total} руб.</h4>
+                                <h4>Итого: {total.toFixed(2)} руб.</h4>
                                 <Button
                                     variant="success"
                                     size="lg"
@@ -147,7 +152,7 @@ const Basket = observer(() => {
                 <Card>
                     <Card.Body>
                         <h4>Оформление заказа</h4>
-                        <p className="fs-5">Общая сумма: <strong>{total} руб.</strong></p>
+                        <p className="fs-5">Общая сумма: <strong>{total.toFixed(2)} руб.</strong></p>
 
                         <Form className="mt-4">
                             <Form.Group className="mb-4">

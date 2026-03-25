@@ -17,6 +17,11 @@ const EditProduct = ({ show, onHide, productId }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
+    // Локальные состояния для выбранного типа, тега и издателя
+    const [currentType, setCurrentType] = useState(null);
+    const [currentTag, setCurrentTag] = useState(null);
+    const [currentPublisher, setCurrentPublisher] = useState(null);
+
     // Загрузка общих данных (только при монтировании)
     useEffect(() => {
         fetchProductTypes().then(data => product.setTypes(data));
@@ -24,20 +29,15 @@ const EditProduct = ({ show, onHide, productId }) => {
         fetchPublishers().then(data => game.setPublishers(data));
         fetchPlatforms().then(data => setPlatforms(data));
         fetchOnlineGames().then(data => game.setOnlineGames(data));
-    }, [product, game]); // зависимости добавлены
+    }, [product, game]);
 
     // Загрузка данных редактируемого товара
     useEffect(() => {
         if (productId && show) {
-            // Сбрасываем глобальные селекты, чтобы не отображались старые поля
-            product.setSelectedType(null);
-            game.setSelectedTag(null);
-            game.setSelectedPublisher(null);
-
             const loadProduct = async () => {
                 try {
                     const data = await fetchOneProduct(productId);
-                    // Локальное состояние
+                    // Основные поля
                     setName(data.name);
                     setPrice(data.price);
                     setDescription(data.description);
@@ -45,12 +45,10 @@ const EditProduct = ({ show, onHide, productId }) => {
                     setError('');
                     setLoading(false);
 
-                    // Устанавливаем тип товара в сторе (вызываем после сброса)
-                    if (data.type) {
-                        product.setSelectedType(data.type);
-                    }
-                    if (data.tag) game.setSelectedTag(data.tag);
-                    if (data.publisher) game.setSelectedPublisher(data.publisher);
+                    // Устанавливаем локальные состояния
+                    setCurrentType(data.type || null);
+                    setCurrentTag(data.tag || null);
+                    setCurrentPublisher(data.publisher || null);
 
                     // Специфичные данные
                     if (data.subscription) {
@@ -80,7 +78,7 @@ const EditProduct = ({ show, onHide, productId }) => {
             };
             loadProduct();
         }
-    }, [productId, show, product, game]); // все зависимости
+    }, [productId, show]);
 
     const handleSpecificDataChange = (key, value) => {
         setSpecificData(prev => ({ ...prev, [key]: value }));
@@ -100,19 +98,19 @@ const EditProduct = ({ show, onHide, productId }) => {
             formData.append('price', String(price));
             formData.append('description', description);
             // Тип товара не передаём – он не должен меняться
-            if (product.selectedType.id === 2 || product.selectedType.id === 3) {
+            if (currentType?.id === 2 || currentType?.id === 3) {
                 formData.append('quantity', String(quantity));
             }
 
-            if (game.selectedTag) {
-                formData.append('tagId', String(game.selectedTag.id));
+            if (currentTag) {
+                formData.append('tagId', String(currentTag.id));
             }
-            if (game.selectedPublisher) {
-                formData.append('publisherId', String(game.selectedPublisher.id));
+            if (currentPublisher) {
+                formData.append('publisherId', String(currentPublisher.id));
             }
 
             const dataToSend = { ...specificData };
-            if (product.selectedType.id === 2 || product.selectedType.id === 3) {
+            if (currentType?.id === 2 || currentType?.id === 3) {
                 dataToSend.quantity = quantity;
             }
             formData.append('specificData', JSON.stringify(dataToSend));
@@ -140,20 +138,20 @@ const EditProduct = ({ show, onHide, productId }) => {
     };
 
     const renderSpecificFields = () => {
-        if (!product.selectedType) return null;
+        if (!currentType) return null;
 
-        switch (product.selectedType.id) {
+        switch (currentType.id) {
             case 1: // Игра
                 return (
                     <>
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {game.selectedTag?.name || "Выберите тег"}
+                                {currentTag?.name || "Выберите тег"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>Без тега</Dropdown.Item>
+                                <Dropdown.Item onClick={() => setCurrentTag(null)}>Без тега</Dropdown.Item>
                                 {game.tags.map(tag => (
-                                    <Dropdown.Item key={tag.id} onClick={() => game.setSelectedTag(tag)}>
+                                    <Dropdown.Item key={tag.id} onClick={() => setCurrentTag(tag)}>
                                         {tag.name}
                                     </Dropdown.Item>
                                 ))}
@@ -162,12 +160,12 @@ const EditProduct = ({ show, onHide, productId }) => {
 
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {game.selectedPublisher?.name || "Выберите издателя"}
+                                {currentPublisher?.name || "Выберите издателя"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedPublisher(null)}>Без издателя</Dropdown.Item>
+                                <Dropdown.Item onClick={() => setCurrentPublisher(null)}>Без издателя</Dropdown.Item>
                                 {game.publishers.map(publisher => (
-                                    <Dropdown.Item key={publisher.id} onClick={() => game.setSelectedPublisher(publisher)}>
+                                    <Dropdown.Item key={publisher.id} onClick={() => setCurrentPublisher(publisher)}>
                                         {publisher.name}
                                     </Dropdown.Item>
                                 ))}
@@ -255,12 +253,12 @@ const EditProduct = ({ show, onHide, productId }) => {
                     <>
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {game.selectedTag?.name || "Выберите тег"}
+                                {currentTag?.name || "Выберите тег"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>Без тега</Dropdown.Item>
+                                <Dropdown.Item onClick={() => setCurrentTag(null)}>Без тега</Dropdown.Item>
                                 {game.tags.map(tag => (
-                                    <Dropdown.Item key={tag.id} onClick={() => game.setSelectedTag(tag)}>
+                                    <Dropdown.Item key={tag.id} onClick={() => setCurrentTag(tag)}>
                                         {tag.name}
                                     </Dropdown.Item>
                                 ))}
@@ -269,12 +267,12 @@ const EditProduct = ({ show, onHide, productId }) => {
 
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {game.selectedPublisher?.name || "Выберите издателя"}
+                                {currentPublisher?.name || "Выберите издателя"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedPublisher(null)}>Без издателя</Dropdown.Item>
+                                <Dropdown.Item onClick={() => setCurrentPublisher(null)}>Без издателя</Dropdown.Item>
                                 {game.publishers.map(publisher => (
-                                    <Dropdown.Item key={publisher.id} onClick={() => game.setSelectedPublisher(publisher)}>
+                                    <Dropdown.Item key={publisher.id} onClick={() => setCurrentPublisher(publisher)}>
                                         {publisher.name}
                                     </Dropdown.Item>
                                 ))}
@@ -301,7 +299,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                         <Form.Label>Тип товара</Form.Label>
                         <Form.Control
                             type="text"
-                            value={product.selectedType?.name || ''}
+                            value={currentType?.name || ''}
                             disabled
                             readOnly
                         />
@@ -348,7 +346,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                 <Button
                     variant="outline-success"
                     onClick={update}
-                    disabled={loading || !product.selectedType}
+                    disabled={loading || !currentType}
                 >
                     {loading ? 'Обновление...' : 'Обновить'}
                 </Button>

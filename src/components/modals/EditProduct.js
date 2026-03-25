@@ -61,28 +61,24 @@ const EditProduct = ({ show, onHide, productId }) => {
                     setCurrentPublisher(publisherObj || null);
 
                     // Специфичные данные
-                    if (data.subscription) {
-                        console.log('Subscription data found');
+                    if (data.subscription && data.subscription.duration_days) {
                         setSpecificData({
                             platform_id: data.subscription.platform_id,
                             duration_days: data.subscription.duration_days
                         });
                         setQuantity(data.availableCodes || 0);
-                    } else if (data.accounts) {
-                        console.log('Accounts data found');
+                    } else if (data.accounts && data.accounts.length > 0) {
                         setSpecificData({
                             additional_info: data.additional_info || '',
                             quantity: data.availableAccounts || 0
                         });
                         setQuantity(data.availableAccounts || 0);
-                    } else if (typeIdNum === 1) {
-                        console.log('Game (type 1) - setting specificData');
+                    } else if (data.product_type_id === 1) {
                         setSpecificData({
                             is_online: data.is_online || false
                         });
                         setQuantity(1);
-                    } else if (typeIdNum === 4) {
-                        console.log('App (type 4) - setting empty specificData');
+                    } else if (data.product_type_id === 4) {
                         setSpecificData({});
                         setQuantity(1);
                     } else {

@@ -23,7 +23,7 @@ const Basket = observer(() => {
     const [checkoutMode, setCheckoutMode] = useState(false);
     const [loading, setLoading] = useState(false);
     const [cardParts, setCardParts] = useState(['', '', '', '']);
-    const [quantities, setQuantities] = useState({});
+    const [setQuantities] = useState({});
 
     useEffect(() => {
         if (user.isAuth) {
@@ -96,7 +96,7 @@ const Basket = observer(() => {
     };
 
     const total = basket.basket?.basketItems?.reduce((sum, item) => {
-        const quantity = quantities[item.id] || item.quantity;
+        const quantity = 1;
         const price = item.basketProduct?.price || 0;
         return sum + (price * quantity);
     }, 0) || 0;

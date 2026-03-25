@@ -22,6 +22,7 @@ const ProductPage = observer(() => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [editShow, setEditShow] = useState(false);
+    const [editProductId, setEditProductId] = useState(null); // добавлено
     const { id } = useParams();
 
     const loadProduct = useCallback(async () => {

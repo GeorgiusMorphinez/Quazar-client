@@ -24,7 +24,7 @@ const EditProduct = ({ show, onHide, productId }) => {
         fetchPublishers().then(data => game.setPublishers(data));
         fetchPlatforms().then(data => setPlatforms(data));
         fetchOnlineGames().then(data => game.setOnlineGames(data));
-    }, []); // пустой массив, т.к. зависимости не меняются
+    }, [product, game]);
 
     // Загрузка данных редактируемого товара
     useEffect(() => {

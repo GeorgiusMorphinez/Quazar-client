@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";
+import { fetchGenres, fetchPublishers } from "../../http/gameAPI";
 import { fetchPlatforms } from "../../http/platformAPI";
-import { fetchProductTypes, updateProduct, deleteProduct, fetchOneProduct, fetchTags, fetchPublishers, fetchOnlineGames } from "../../http/productAPI";
+import { fetchProductTypes, updateProduct, deleteProduct, fetchOneProduct, fetchOnlineGames } from "../../http/productAPI";
 
 const EditProduct = ({ show, onHide, productId }) => {
     const { product, game } = useContext(Context);
@@ -15,30 +16,45 @@ const EditProduct = ({ show, onHide, productId }) => {
     const [specificData, setSpecificData] = useState({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [existingData, setExistingData] = useState(null);
 
+    // Загрузка общих данных
+    useEffect(() => {
+        fetchProductTypes().then(data => product.setTypes(data));
+        fetchGenres().then(data => game.setGenres(data));
+        fetchPublishers().then(data => game.setPublishers(data));
+        fetchPlatforms().then(data => setPlatforms(data));
+        fetchOnlineGames().then(data => game.setOnlineGames(data));
+    }, []);
 
+    // Загрузка данных редактируемого товара
     useEffect(() => {
         if (productId) {
             const loadProduct = async () => {
                 try {
                     const data = await fetchOneProduct(productId);
+                    setExistingData(data);
                     setName(data.name);
                     setPrice(data.price);
                     setDescription(data.description);
-                    product.setSelectedType(data.productType);
-                    if (data.tag) game.setSelectedTag(data.tag);
+                    // Устанавливаем тип товара в сторе (чтобы кнопка стала активной)
+                    if (data.productType) {
+                        product.setSelectedType(data.productType);
+                    }
+                    if (data.genre) game.setSelectedGenre(data.genre);
                     if (data.publisher) game.setSelectedPublisher(data.publisher);
-                    const onlineGamesData = await fetchOnlineGames();
-                    game.setOnlineGames(onlineGamesData);
+
                     if (data.subscription) {
                         setSpecificData({
                             platform_id: data.subscription.platform_id,
                             duration_days: data.subscription.duration_days
                         });
-                        setQuantity(data.availableCodes || 0); // Для подписок
+                        setQuantity(data.availableCodes || 0);
                     } else if (data.accounts) {
+                        // Для аккаунта: сохраняем additional_info и количество
                         setSpecificData({
-                            additional_info: data.additional_info || ''
+                            additional_info: data.additional_info || '',
+                            quantity: data.availableAccounts || 0
                         });
                         setQuantity(data.availableAccounts || 0);
                     } else if (data.product_type_id === 1) {
@@ -52,14 +68,7 @@ const EditProduct = ({ show, onHide, productId }) => {
             };
             loadProduct();
         }
-    }, [productId, game, product]);
-
-    useEffect(() => {
-        fetchProductTypes().then(data => product.setTypes(data));
-        fetchTags().then(data => game.setTags(data));
-        fetchPublishers().then(data => game.setPublishers(data));
-        fetchPlatforms().then(data => setPlatforms(data));
-    }, [product, game]);
+    }, [productId, product, game]);
 
     const handleSpecificDataChange = (key, value) => {
         setSpecificData(prev => ({ ...prev, [key]: value }));
@@ -79,10 +88,13 @@ const EditProduct = ({ show, onHide, productId }) => {
             formData.append('price', String(price));
             formData.append('description', description);
             formData.append('productTypeId', String(product.selectedType.id));
-            formData.append('quantity', String(quantity));
+            // Для подписок и аккаунтов передаём количество
+            if (product.selectedType.id === 2 || product.selectedType.id === 3) {
+                formData.append('quantity', String(quantity));
+            }
 
-            if (game.selectedTag) {
-                formData.append('tagId', String(game.selectedTag.id));
+            if (game.selectedGenre) {
+                formData.append('genreId', String(game.selectedGenre.id));
             }
             if (game.selectedPublisher) {
                 formData.append('publisherId', String(game.selectedPublisher.id));
@@ -92,9 +104,6 @@ const EditProduct = ({ show, onHide, productId }) => {
             const dataToSend = { ...specificData };
             if (product.selectedType.id === 2 || product.selectedType.id === 3) {
                 dataToSend.quantity = quantity;
-            }
-            if (product.selectedType.id === 1) {
-                dataToSend.is_online = specificData.is_online; // уже есть
             }
             formData.append('specificData', JSON.stringify(dataToSend));
 
@@ -124,23 +133,18 @@ const EditProduct = ({ show, onHide, productId }) => {
         if (!product.selectedType) return null;
 
         switch (product.selectedType.id) {
-            case 1: // Ключ
+            case 1: // Игра
                 return (
                     <>
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {game.selectedTag?.name || "Выберите тэг"}
+                                {game.selectedGenre?.name || "Выберите тег"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>
-                                    Без тэга
-                                </Dropdown.Item>
-                                {game.tags.map(tag => (
-                                    <Dropdown.Item
-                                        key={tag.id}
-                                        onClick={() => game.setSelectedTag(tag)}
-                                    >
-                                        {tag.name}
+                                <Dropdown.Item onClick={() => game.setSelectedGenre(null)}>Без тега</Dropdown.Item>
+                                {game.genres.map(genre => (
+                                    <Dropdown.Item key={genre.id} onClick={() => game.setSelectedGenre(genre)}>
+                                        {genre.name}
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>
@@ -151,14 +155,9 @@ const EditProduct = ({ show, onHide, productId }) => {
                                 {game.selectedPublisher?.name || "Выберите издателя"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedPublisher(null)}>
-                                    Без издателя
-                                </Dropdown.Item>
+                                <Dropdown.Item onClick={() => game.setSelectedPublisher(null)}>Без издателя</Dropdown.Item>
                                 {game.publishers.map(publisher => (
-                                    <Dropdown.Item
-                                        key={publisher.id}
-                                        onClick={() => game.setSelectedPublisher(publisher)}
-                                    >
+                                    <Dropdown.Item key={publisher.id} onClick={() => game.setSelectedPublisher(publisher)}>
                                         {publisher.name}
                                     </Dropdown.Item>
                                 ))}
@@ -182,10 +181,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 {platforms.map(platform => (
-                                    <Dropdown.Item
-                                        key={platform.id}
-                                        onClick={() => handleSpecificDataChange('platform_id', platform.id)}
-                                    >
+                                    <Dropdown.Item key={platform.id} onClick={() => handleSpecificDataChange('platform_id', platform.id)}>
                                         {platform.name}
                                     </Dropdown.Item>
                                 ))}
@@ -213,70 +209,30 @@ const EditProduct = ({ show, onHide, productId }) => {
             case 3: // Аккаунт
                 return (
                     <>
-                    <Form.Control
-                        className="mb-3"
-                        as="textarea"
-                        placeholder="Дополнительная информация"
-                        value={specificData.additional_info || ''}
-                        onChange={e => handleSpecificDataChange('additional_info', e.target.value)}
-                        rows={3}
-                    />
-                    <Form.Control
-                        className="mb-3"
-                        type="number"
-                        placeholder="Количество"
-                        value={quantity}
-                        onChange={e => setQuantity(Math.max(0, parseInt(e.target.value) || 0))} // Для редактирования
-                        min="0"
-                    />
-                    <Dropdown className="mb-3">
-                        <Dropdown.Toggle variant="outline-secondary">
-                            {specificData.game_id ? game.onlineGames.find(g => g.id === specificData.game_id)?.name || "Выберите игру" : "Выберите игру"}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                        {game.onlineGames.map(g => (
-                            <Dropdown.Item
-                                key={g.id}
-                                onClick={() => handleSpecificDataChange('game_id', g.id)}
-                            >
-                                {g.name}
-                            </Dropdown.Item>
-                        ))}
-                    </Dropdown.Menu>
-                    </Dropdown>
-            </>
-            );
-
-            case 4:
-                return (
-                    <>
+                        <Form.Control
+                            className="mb-3"
+                            as="textarea"
+                            placeholder="Дополнительная информация"
+                            value={specificData.additional_info || ''}
+                            onChange={e => handleSpecificDataChange('additional_info', e.target.value)}
+                            rows={3}
+                        />
+                        <Form.Control
+                            className="mb-3"
+                            type="number"
+                            placeholder="Количество аккаунтов"
+                            value={quantity}
+                            onChange={e => setQuantity(Math.max(0, parseInt(e.target.value) || 0))}
+                            min="0"
+                        />
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {game.selectedTag?.name || "Выберите тег"}
+                                {specificData.game_id ? game.onlineGames.find(g => g.id === specificData.game_id)?.name || "Выберите игру" : "Выберите игру"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>
-                                    Без тега
-                                </Dropdown.Item>
-                                {game.tags.map(tag => (
-                                    <Dropdown.Item key={tag.id} onClick={() => game.setSelectedTag(tag)}>
-                                        {tag.name}
-                                    </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
-
-                        <Dropdown className="mb-3">
-                            <Dropdown.Toggle variant="outline-secondary">
-                                {game.selectedPublisher?.name || "Выберите издателя"}
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedPublisher(null)}>
-                                    Без издателя
-                                </Dropdown.Item>
-                                {game.publishers.map(publisher => (
-                                    <Dropdown.Item key={publisher.id} onClick={() => game.setSelectedPublisher(publisher)}>
-                                        {publisher.name}
+                                {game.onlineGames.map(g => (
+                                    <Dropdown.Item key={g.id} onClick={() => handleSpecificDataChange('game_id', g.id)}>
+                                        {g.name}
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>

@@ -17,12 +17,10 @@ const EditProduct = ({ show, onHide, productId }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // Локальные состояния
     const [currentType, setCurrentType] = useState(null);
     const [currentTag, setCurrentTag] = useState(null);
     const [currentPublisher, setCurrentPublisher] = useState(null);
 
-    // Загрузка общих данных (только при монтировании)
     useEffect(() => {
         fetchProductTypes().then(data => product.setTypes(data));
         fetchTags().then(data => game.setTags(data));
@@ -31,16 +29,11 @@ const EditProduct = ({ show, onHide, productId }) => {
         fetchOnlineGames().then(data => game.setOnlineGames(data));
     }, [product, game]);
 
-    // Загрузка данных редактируемого товара
     useEffect(() => {
         if (productId && show) {
             const loadProduct = async () => {
                 try {
                     const data = await fetchOneProduct(productId);
-                    console.log('=== EDIT PRODUCT LOADED ===');
-                    console.log('Data:', data);
-                    console.log('product_type_id:', data.product_type_id, 'type:', typeof data.product_type_id);
-                    // Основные поля
                     setName(data.name);
                     setPrice(data.price);
                     setDescription(data.description);
@@ -48,41 +41,39 @@ const EditProduct = ({ show, onHide, productId }) => {
                     setError('');
                     setLoading(false);
 
-                    // Определяем тип по product_type_id
-                    const typeIdNum = parseInt(data.product_type_id);
                     const typeObj = product.types.find(t => t.id === data.product_type_id);
-                    console.log('Found typeObj:', typeObj);
                     setCurrentType(typeObj || null);
 
-                    // Определяем тег и издателя по их id
                     const tagObj = game.tags.find(t => t.id === data.tag_id);
                     setCurrentTag(tagObj || null);
                     const publisherObj = game.publishers.find(p => p.id === data.publisher_id);
                     setCurrentPublisher(publisherObj || null);
 
-                    // Специфичные данные
+                    // Специфичные данные – проверяем наличие реальных данных
                     if (data.subscription && data.subscription.duration_days) {
+                        // Подписка
                         setSpecificData({
                             platform_id: data.subscription.platform_id,
                             duration_days: data.subscription.duration_days
                         });
                         setQuantity(data.availableCodes || 0);
                     } else if (data.accounts && data.accounts.length > 0) {
+                        // Аккаунт
                         setSpecificData({
                             additional_info: data.additional_info || '',
                             quantity: data.availableAccounts || 0
                         });
                         setQuantity(data.availableAccounts || 0);
                     } else if (data.product_type_id === 1) {
+                        // Игра
                         setSpecificData({
                             is_online: data.is_online || false
                         });
                         setQuantity(1);
                     } else if (data.product_type_id === 4) {
+                        // Приложение
                         setSpecificData({});
                         setQuantity(1);
-                    } else {
-                        console.log('Unknown product type, no specific data');
                     }
                 } catch (e) {
                     console.error('Error loading product:', e);
@@ -110,7 +101,6 @@ const EditProduct = ({ show, onHide, productId }) => {
             formData.append('name', name.trim());
             formData.append('price', String(price));
             formData.append('description', description);
-            // Тип товара не передаём – он не должен меняться
             if (currentType?.id === 2 || currentType?.id === 3) {
                 formData.append('quantity', String(quantity));
             }
@@ -151,7 +141,6 @@ const EditProduct = ({ show, onHide, productId }) => {
     };
 
     const renderSpecificFields = () => {
-        console.log('Rendering specific fields, currentType:', currentType, 'specificData:', specificData);
         if (!currentType) return null;
 
         switch (currentType.id) {

@@ -143,7 +143,10 @@ const ProductPage = observer(() => {
                         </div>
 
                         {user.user.role === 'ADMIN' && (
-                            <Button variant="outline-primary" className="mt-3" onClick={() => setEditShow(true)}>
+                            <Button variant="outline-primary" className="mt-3" onClick={() => {
+                                setEditProductId(id);
+                                setEditShow(true);
+                            }}>
                                 🔧 Редактировать
                             </Button>
                         )}

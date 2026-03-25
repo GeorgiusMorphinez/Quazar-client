@@ -24,45 +24,27 @@ const EditProduct = ({ show, onHide, productId }) => {
         fetchPublishers().then(data => game.setPublishers(data));
         fetchPlatforms().then(data => setPlatforms(data));
         fetchOnlineGames().then(data => game.setOnlineGames(data));
-    }, [product, game]);
+    }, []);
 
-    // Сброс формы при открытии с новым productId
+    // Загрузка данных редактируемого товара
     useEffect(() => {
-        if (!show) return;
-
-        // Сброс полей
-        setName("");
-        setPrice(0);
-        setDescription("");
-        setFile(null);
-        setQuantity(1);
-        setSpecificData({});
-        setError('');
-        // Сброс выбранных тегов/издателей в сторе
-        game.setSelectedTag(null);
-        game.setSelectedPublisher(null);
-        product.setSelectedType(null);
-
-        if (productId) {
+        if (productId && show) {
             const loadProduct = async () => {
                 try {
+                    // Сброс перед загрузкой
+                    setSpecificData({});
+                    setQuantity(1);
+                    setError('');
                     const data = await fetchOneProduct(productId);
                     setName(data.name);
                     setPrice(data.price);
                     setDescription(data.description);
-                    // Устанавливаем тип товара
                     if (data.type) {
                         product.setSelectedType(data.type);
                     }
-                    // Устанавливаем тег и издателя
-                    if (data.tag) {
-                        game.setSelectedTag(data.tag);
-                    }
-                    if (data.publisher) {
-                        game.setSelectedPublisher(data.publisher);
-                    }
+                    if (data.tag) game.setSelectedTag(data.tag);
+                    if (data.publisher) game.setSelectedPublisher(data.publisher);
 
-                    // В зависимости от типа товара заполняем специфические поля
                     if (data.subscription) {
                         setSpecificData({
                             platform_id: data.subscription.platform_id,
@@ -88,7 +70,22 @@ const EditProduct = ({ show, onHide, productId }) => {
             };
             loadProduct();
         }
-    }, [show, productId, product, game]);
+    }, [productId, show, product, game]);
+
+    // Сброс при закрытии
+    useEffect(() => {
+        if (!show) {
+            setName('');
+            setPrice(0);
+            setDescription('');
+            setFile(null);
+            setQuantity(1);
+            setSpecificData({});
+            product.setSelectedType(null);
+            game.setSelectedTag(null);
+            game.setSelectedPublisher(null);
+        }
+    }, [show, product, game]);
 
     const handleSpecificDataChange = (key, value) => {
         setSpecificData(prev => ({ ...prev, [key]: value }));

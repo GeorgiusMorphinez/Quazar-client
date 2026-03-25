@@ -207,6 +207,7 @@ const ProductPage = observer(() => {
             )}
 
             <EditProduct
+                key={editProductId}
                 show={editShow}
                 onHide={() => {
                     setEditShow(false);

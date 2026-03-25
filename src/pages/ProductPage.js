@@ -15,12 +15,9 @@ const ProductPage = observer(() => {
         img: '',
         description: '',
         rating: 0,
-        product_type_id: null,
-        availableAccounts: 0
+        product_type_id: null
     });
     const [premiumAccounts, setPremiumAccounts] = useState([]);
-    const [editAccountShow, setEditAccountShow] = useState(false);
-    const [editAccountProductId, setEditAccountProductId] = useState(null);
     const [selectedRating, setSelectedRating] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -33,13 +30,6 @@ const ProductPage = observer(() => {
             setError(null);
             const data = await fetchOneProduct(id);
             setProduct(data);
-
-            if (data.product_type_id === 1) {
-                const accounts = await fetchPremiumAccounts(data.id);
-                setPremiumAccounts(accounts);
-            } else {
-                setPremiumAccounts([]);
-            }
         } catch (e) {
             console.error('Load error:', e);
             setError('Ошибка загрузки данных');
@@ -198,8 +188,8 @@ const ProductPage = observer(() => {
                                                         variant="outline-secondary"
                                                         size="sm"
                                                         onClick={() => {
-                                                            setEditAccountProductId(acc.id);
-                                                            setEditAccountShow(true);
+                                                            setEditProductId(acc.id);
+                                                            setEditShow(true);
                                                         }}
                                                     >
                                                         ⚙️
@@ -215,14 +205,13 @@ const ProductPage = observer(() => {
                 </Row>
             )}
 
-            <EditProduct show={editShow} onHide={() => setEditShow(false)} productId={id} />
             <EditProduct
-                show={editAccountShow}
+                show={editShow}
                 onHide={() => {
-                    setEditAccountShow(false);
-                    loadPremiumAccounts();
+                    setEditShow(false);
+                    loadPremiumAccounts(); // обновляем список после редактирования
                 }}
-                productId={editAccountProductId}
+                productId={editProductId}
             />
         </Container>
     );

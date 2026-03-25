@@ -60,7 +60,7 @@ const Basket = observer(() => {
             const items = basket.basket.basketItems?.map(item => ({
                 id: item.id,
                 product_id: item.product_id,
-                quantity: 1,
+                quantity: 1,          // всегда один товар
                 price: item.basketProduct.price
             })) || [];
 
@@ -81,7 +81,8 @@ const Basket = observer(() => {
     };
 
     const total = basket.basket?.basketItems?.reduce((sum, item) => {
-        return sum + (item.basketProduct?.price || 0);
+        const price = item.basketProduct?.price || 0;
+        return sum + price; // количество всегда 1
     }, 0) || 0;
 
     return (
@@ -98,7 +99,7 @@ const Basket = observer(() => {
                                         <Row className="align-items-center">
                                             <Col md={3}>
                                                 <Image
-                                                    src={getImageUrl(item.basketProduct)}
+                                                    src={`${process.env.REACT_APP_API_URL}/static/${item.basketProduct?.img || ''}`}
                                                     alt={item.basketProduct?.name || 'No name'}
                                                     style={{ width: '100px' }}
                                                     thumbnail
@@ -109,6 +110,9 @@ const Basket = observer(() => {
                                                 <div className="text-danger fw-bold">
                                                     {item.basketProduct?.price || 0} руб.
                                                 </div>
+                                            </Col>
+                                            <Col md={3}>
+                                                <div>Количество: 1</div>
                                             </Col>
                                             <Col md={3} className="d-flex justify-content-end">
                                                 <Button

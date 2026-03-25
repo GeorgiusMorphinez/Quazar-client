@@ -24,15 +24,20 @@ const EditProduct = ({ show, onHide, productId }) => {
         fetchPublishers().then(data => game.setPublishers(data));
         fetchPlatforms().then(data => setPlatforms(data));
         fetchOnlineGames().then(data => game.setOnlineGames(data));
-    }, [product, game]);
+    }, [product, game]); // зависимости добавлены
 
     // Загрузка данных редактируемого товара
     useEffect(() => {
         if (productId && show) {
+            // Сбрасываем глобальные селекты, чтобы не отображались старые поля
+            product.setSelectedType(null);
+            game.setSelectedTag(null);
+            game.setSelectedPublisher(null);
+
             const loadProduct = async () => {
                 try {
                     const data = await fetchOneProduct(productId);
-                    // Сбрасываем локальное состояние
+                    // Локальное состояние
                     setName(data.name);
                     setPrice(data.price);
                     setDescription(data.description);
@@ -40,7 +45,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                     setError('');
                     setLoading(false);
 
-                    // Устанавливаем тип товара в сторе
+                    // Устанавливаем тип товара в сторе (вызываем после сброса)
                     if (data.type) {
                         product.setSelectedType(data.type);
                     }
@@ -75,7 +80,7 @@ const EditProduct = ({ show, onHide, productId }) => {
             };
             loadProduct();
         }
-    }, [productId, show, product, game]); // добавлены все зависимости
+    }, [productId, show, product, game]); // все зависимости
 
     const handleSpecificDataChange = (key, value) => {
         setSpecificData(prev => ({ ...prev, [key]: value }));

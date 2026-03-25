@@ -8,32 +8,17 @@ import { SHOP_ROUTE } from '../utils/consts';
 import { $authHost } from "../http";
 import { fetchOrders } from '../http/orderAPI';
 
-// Вспомогательная функция для получения URL изображения
-const getImageUrl = (product) => {
-    if (!product || !product.img) return '';
-    if (product.img.startsWith('http')) {
-        return product.img;
-    }
-    return `${process.env.REACT_APP_API_URL}/static/${product.img}`;
-};
-
 const Basket = observer(() => {
     const { user, basket, order } = useContext(Context);
     const navigate = useNavigate();
     const [checkoutMode, setCheckoutMode] = useState(false);
     const [loading, setLoading] = useState(false);
     const [cardParts, setCardParts] = useState(['', '', '', '']);
-    const [setQuantities] = useState({});
 
     useEffect(() => {
         if (user.isAuth) {
             fetchBasket().then(data => {
                 basket.setBasket(data);
-                const initialQuantities = {};
-                data.basketItems?.forEach(item => {
-                    initialQuantities[item.id] = item.quantity;
-                });
-                setQuantities(initialQuantities);
             });
         } else {
             navigate('/login');
@@ -96,9 +81,7 @@ const Basket = observer(() => {
     };
 
     const total = basket.basket?.basketItems?.reduce((sum, item) => {
-        const quantity = 1;
-        const price = item.basketProduct?.price || 0;
-        return sum + (price * quantity);
+        return sum + (item.basketProduct?.price || 0);
     }, 0) || 0;
 
     return (

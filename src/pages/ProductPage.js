@@ -48,12 +48,18 @@ const ProductPage = observer(() => {
         }
     }, [id]);
 
-    const loadPremiumAccounts = async () => {
+    const loadPremiumAccounts = useCallback(async () => {
         if (product.product_type_id === 1) {
-            const accounts = await fetchPremiumAccounts(product.id);
-            setPremiumAccounts(accounts);
+            try {
+                const accounts = await fetchPremiumAccounts(product.id);
+                setPremiumAccounts(accounts);
+            } catch (e) {
+                console.error('Error loading premium accounts:', e);
+            }
+        } else {
+            setPremiumAccounts([]);
         }
-    };
+    }, [product.id, product.product_type_id]);
 
     useEffect(() => {
         loadProduct();
@@ -61,7 +67,7 @@ const ProductPage = observer(() => {
 
     useEffect(() => {
         loadPremiumAccounts();
-    }, [product.id]);
+    }, [loadPremiumAccounts]);
 
     const handleRatingSubmit = async () => {
         try {

@@ -85,7 +85,6 @@ const EditProduct = ({ show, onHide, productId }) => {
             formData.append('name', name.trim());
             formData.append('price', String(price));
             formData.append('description', description);
-            formData.append('productTypeId', String(product.selectedType.id));
             if (product.selectedType.id === 2 || product.selectedType.id === 3) {
                 formData.append('quantity', String(quantity));
             }
@@ -283,21 +282,15 @@ const EditProduct = ({ show, onHide, productId }) => {
                 {error && <Alert variant="danger">{error}</Alert>}
 
                 <Form>
-                    <Dropdown className="mb-3">
-                        <Dropdown.Toggle variant="outline-primary">
-                            {product.selectedType?.name || "Выберите тип товара"}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            {product.types.map(type => (
-                                <Dropdown.Item
-                                    key={type.id}
-                                    onClick={() => product.setSelectedType(type)}
-                                >
-                                    {type.name}
-                                </Dropdown.Item>
-                            ))}
-                        </Dropdown.Menu>
-                    </Dropdown>
+                    <div className="mb-3">
+                        <Form.Label>Тип товара</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={product.selectedType?.name || ''}
+                            disabled
+                            readOnly
+                        />
+                    </div>
 
                     <Form.Control
                         className="mb-3"

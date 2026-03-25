@@ -48,12 +48,12 @@ const ProductPage = observer(() => {
         }
     }, [id]);
 
-    const loadPremiumAccounts = useCallback(async () => {
+    const loadPremiumAccounts = async () => {
         if (product.product_type_id === 1) {
             const accounts = await fetchPremiumAccounts(product.id);
             setPremiumAccounts(accounts);
         }
-    }, [product.id, product.product_type_id]);
+    };
 
     useEffect(() => {
         loadProduct();
@@ -61,7 +61,7 @@ const ProductPage = observer(() => {
 
     useEffect(() => {
         loadPremiumAccounts();
-    }, [loadPremiumAccounts]);
+    }, [product.id]);
 
     const handleRatingSubmit = async () => {
         try {
@@ -82,6 +82,8 @@ const ProductPage = observer(() => {
         try {
             await $authHost.post('/api/basket/add', { product_id: accountId });
             alert('Товар добавлен в корзину');
+            // Обновляем список аккаунтов, чтобы количество уменьшилось после покупки
+            loadPremiumAccounts();
         } catch (e) {
             alert(e.response?.data?.message || 'Ошибка добавления в корзину');
         }

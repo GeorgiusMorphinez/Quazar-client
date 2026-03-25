@@ -24,7 +24,7 @@ const EditProduct = ({ show, onHide, productId }) => {
         fetchPublishers().then(data => game.setPublishers(data));
         fetchPlatforms().then(data => setPlatforms(data));
         fetchOnlineGames().then(data => game.setOnlineGames(data));
-    }, []);
+    }, [product, game]);
 
     // Сброс формы при открытии с новым productId
     useEffect(() => {

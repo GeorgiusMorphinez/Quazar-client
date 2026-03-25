@@ -17,17 +17,32 @@ const EditProduct = ({ show, onHide, productId }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // Загрузка общих данных
+    // Загрузка общих данных (один раз)
     useEffect(() => {
         fetchProductTypes().then(data => product.setTypes(data));
         fetchTags().then(data => game.setTags(data));
         fetchPublishers().then(data => game.setPublishers(data));
         fetchPlatforms().then(data => setPlatforms(data));
         fetchOnlineGames().then(data => game.setOnlineGames(data));
-    }, [product, game]);
+    }, []);
 
-    // Загрузка данных редактируемого товара
+    // Сброс формы при открытии с новым productId
     useEffect(() => {
+        if (!show) return;
+
+        // Сброс полей
+        setName("");
+        setPrice(0);
+        setDescription("");
+        setFile(null);
+        setQuantity(1);
+        setSpecificData({});
+        setError('');
+        // Сброс выбранных тегов/издателей в сторе
+        game.setSelectedTag(null);
+        game.setSelectedPublisher(null);
+        product.setSelectedType(null);
+
         if (productId) {
             const loadProduct = async () => {
                 try {
@@ -35,12 +50,19 @@ const EditProduct = ({ show, onHide, productId }) => {
                     setName(data.name);
                     setPrice(data.price);
                     setDescription(data.description);
+                    // Устанавливаем тип товара
                     if (data.type) {
                         product.setSelectedType(data.type);
                     }
-                    if (data.tag) game.setSelectedTag(data.tag); // если используете tag
-                    if (data.publisher) game.setSelectedPublisher(data.publisher);
+                    // Устанавливаем тег и издателя
+                    if (data.tag) {
+                        game.setSelectedTag(data.tag);
+                    }
+                    if (data.publisher) {
+                        game.setSelectedPublisher(data.publisher);
+                    }
 
+                    // В зависимости от типа товара заполняем специфические поля
                     if (data.subscription) {
                         setSpecificData({
                             platform_id: data.subscription.platform_id,
@@ -66,7 +88,7 @@ const EditProduct = ({ show, onHide, productId }) => {
             };
             loadProduct();
         }
-    }, [productId, product, game]);
+    }, [show, productId, product, game]);
 
     const handleSpecificDataChange = (key, value) => {
         setSpecificData(prev => ({ ...prev, [key]: value }));
@@ -85,6 +107,7 @@ const EditProduct = ({ show, onHide, productId }) => {
             formData.append('name', name.trim());
             formData.append('price', String(price));
             formData.append('description', description);
+            // Не отправляем productTypeId, так как тип не меняется
             if (product.selectedType.id === 2 || product.selectedType.id === 3) {
                 formData.append('quantity', String(quantity));
             }

@@ -37,6 +37,9 @@ const EditProduct = ({ show, onHide, productId }) => {
             const loadProduct = async () => {
                 try {
                     const data = await fetchOneProduct(productId);
+                    console.log('=== EDIT PRODUCT LOADED ===');
+                    console.log('Data:', data);
+                    console.log('product_type_id:', data.product_type_id, 'type:', typeof data.product_type_id);
                     // Основные поля
                     setName(data.name);
                     setPrice(data.price);
@@ -46,7 +49,9 @@ const EditProduct = ({ show, onHide, productId }) => {
                     setLoading(false);
 
                     // Определяем тип по product_type_id
+                    const typeIdNum = parseInt(data.product_type_id);
                     const typeObj = product.types.find(t => t.id === data.product_type_id);
+                    console.log('Found typeObj:', typeObj);
                     setCurrentType(typeObj || null);
 
                     // Определяем тег и издателя по их id
@@ -57,25 +62,31 @@ const EditProduct = ({ show, onHide, productId }) => {
 
                     // Специфичные данные
                     if (data.subscription) {
+                        console.log('Subscription data found');
                         setSpecificData({
                             platform_id: data.subscription.platform_id,
                             duration_days: data.subscription.duration_days
                         });
                         setQuantity(data.availableCodes || 0);
                     } else if (data.accounts) {
+                        console.log('Accounts data found');
                         setSpecificData({
                             additional_info: data.additional_info || '',
                             quantity: data.availableAccounts || 0
                         });
                         setQuantity(data.availableAccounts || 0);
-                    } else if (data.product_type_id === 1) {
+                    } else if (typeIdNum === 1) {
+                        console.log('Game (type 1) - setting specificData');
                         setSpecificData({
                             is_online: data.is_online || false
                         });
                         setQuantity(1);
-                    } else if (data.product_type_id === 4) {
+                    } else if (typeIdNum === 4) {
+                        console.log('App (type 4) - setting empty specificData');
                         setSpecificData({});
                         setQuantity(1);
+                    } else {
+                        console.log('Unknown product type, no specific data');
                     }
                 } catch (e) {
                     console.error('Error loading product:', e);
@@ -144,6 +155,7 @@ const EditProduct = ({ show, onHide, productId }) => {
     };
 
     const renderSpecificFields = () => {
+        console.log('Rendering specific fields, currentType:', currentType, 'specificData:', specificData);
         if (!currentType) return null;
 
         switch (currentType.id) {

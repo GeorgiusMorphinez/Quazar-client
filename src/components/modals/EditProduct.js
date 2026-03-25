@@ -17,7 +17,7 @@ const EditProduct = ({ show, onHide, productId }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    // Локальные состояния для выбранного типа, тега и издателя
+    // Локальные состояния
     const [currentType, setCurrentType] = useState(null);
     const [currentTag, setCurrentTag] = useState(null);
     const [currentPublisher, setCurrentPublisher] = useState(null);
@@ -45,10 +45,15 @@ const EditProduct = ({ show, onHide, productId }) => {
                     setError('');
                     setLoading(false);
 
-                    // Устанавливаем локальные состояния
-                    setCurrentType(data.type || null);
-                    setCurrentTag(data.tag || null);
-                    setCurrentPublisher(data.publisher || null);
+                    // Определяем тип по product_type_id
+                    const typeObj = product.types.find(t => t.id === data.product_type_id);
+                    setCurrentType(typeObj || null);
+
+                    // Определяем тег и издателя по их id
+                    const tagObj = game.tags.find(t => t.id === data.tag_id);
+                    setCurrentTag(tagObj || null);
+                    const publisherObj = game.publishers.find(p => p.id === data.publisher_id);
+                    setCurrentPublisher(publisherObj || null);
 
                     // Специфичные данные
                     if (data.subscription) {
@@ -73,12 +78,13 @@ const EditProduct = ({ show, onHide, productId }) => {
                         setQuantity(1);
                     }
                 } catch (e) {
+                    console.error('Error loading product:', e);
                     setError('Ошибка загрузки данных товара');
                 }
             };
             loadProduct();
         }
-    }, [productId, show]);
+    }, [productId, show, product.types, game.tags, game.publishers]);
 
     const handleSpecificDataChange = (key, value) => {
         setSpecificData(prev => ({ ...prev, [key]: value }));

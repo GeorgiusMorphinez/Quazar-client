@@ -53,16 +53,6 @@ const Basket = observer(() => {
         }
     };
 
-    const handleQuantityChange = (itemId, value) => {
-        const numValue = parseInt(value);
-        if (!isNaN(numValue)) {
-            setQuantities(prev => ({
-                ...prev,
-                [itemId]: Math.max(1, numValue)
-            }));
-        }
-    };
-
     const handleCardChange = (index, value) => {
         if (/^\d{0,4}$/.test(value)) {
             const newParts = [...cardParts];

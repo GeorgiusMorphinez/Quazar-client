@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button, Container, Row, Col, Image, Spinner, Card } from 'react-bootstrap';
-import { fetchOneProduct, fetchPremiumAccounts, updateProduct, deleteProduct } from '../http/productAPI';
+import { fetchOneProduct, fetchPremiumAccounts } from '../http/productAPI';
 import { createRating } from '../http/ratingAPI';
 import { Context } from '../index';
 import { observer } from 'mobx-react-lite';
@@ -48,12 +48,12 @@ const ProductPage = observer(() => {
         }
     }, [id]);
 
-    const loadPremiumAccounts = async () => {
+    const loadPremiumAccounts = useCallback(async () => {
         if (product.product_type_id === 1) {
             const accounts = await fetchPremiumAccounts(product.id);
             setPremiumAccounts(accounts);
         }
-    };
+    }, [product.id, product.product_type_id]);
 
     useEffect(() => {
         loadProduct();
@@ -61,7 +61,7 @@ const ProductPage = observer(() => {
 
     useEffect(() => {
         loadPremiumAccounts();
-    }, [product.id]);
+    }, [loadPremiumAccounts]);
 
     const handleRatingSubmit = async () => {
         try {
@@ -71,19 +71,6 @@ const ProductPage = observer(() => {
             await loadProduct();
         } catch (e) {
             alert(e.response?.data?.message || 'Ошибка оценки');
-        }
-    };
-
-    const handleAddToBasket = async (productId) => {
-        if (!user.isAuth) {
-            alert('Авторизуйтесь для покупки');
-            return;
-        }
-        try {
-            await $authHost.post('/api/basket/add', { product_id: productId });
-            alert('Товар добавлен в корзину');
-        } catch (e) {
-            alert(e.response?.data?.message || 'Ошибка добавления в корзину');
         }
     };
 
@@ -225,7 +212,7 @@ const ProductPage = observer(() => {
                 show={editAccountShow}
                 onHide={() => {
                     setEditAccountShow(false);
-                    loadPremiumAccounts(); // обновляем список после редактирования
+                    loadPremiumAccounts();
                 }}
                 productId={editAccountProductId}
             />

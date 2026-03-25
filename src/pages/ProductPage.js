@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button, Container, Row, Col, Image, Spinner, Card } from 'react-bootstrap';
-import { fetchOneProduct, fetchPremiumAccounts } from '../http/productAPI';
+import { fetchOneProduct, fetchPremiumAccounts, updateProduct, deleteProduct } from '../http/productAPI';
 import { createRating } from '../http/ratingAPI';
 import { Context } from '../index';
 import { observer } from 'mobx-react-lite';
@@ -19,6 +19,8 @@ const ProductPage = observer(() => {
         availableAccounts: 0
     });
     const [premiumAccounts, setPremiumAccounts] = useState([]);
+    const [editAccountShow, setEditAccountShow] = useState(false);
+    const [editAccountProductId, setEditAccountProductId] = useState(null);
     const [selectedRating, setSelectedRating] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -46,9 +48,20 @@ const ProductPage = observer(() => {
         }
     }, [id]);
 
+    const loadPremiumAccounts = async () => {
+        if (product.product_type_id === 1) {
+            const accounts = await fetchPremiumAccounts(product.id);
+            setPremiumAccounts(accounts);
+        }
+    };
+
     useEffect(() => {
         loadProduct();
     }, [loadProduct]);
+
+    useEffect(() => {
+        loadPremiumAccounts();
+    }, [product.id]);
 
     const handleRatingSubmit = async () => {
         try {
@@ -68,6 +81,19 @@ const ProductPage = observer(() => {
         }
         try {
             await $authHost.post('/api/basket/add', { product_id: productId });
+            alert('Товар добавлен в корзину');
+        } catch (e) {
+            alert(e.response?.data?.message || 'Ошибка добавления в корзину');
+        }
+    };
+
+    const handleAddPremiumToBasket = async (accountId) => {
+        if (!user.isAuth) {
+            alert('Авторизуйтесь для покупки');
+            return;
+        }
+        try {
+            await $authHost.post('/api/basket/add', { product_id: accountId });
             alert('Товар добавлен в корзину');
         } catch (e) {
             alert(e.response?.data?.message || 'Ошибка добавления в корзину');
@@ -149,21 +175,42 @@ const ProductPage = observer(() => {
                             {premiumAccounts.map(acc => (
                                 <Col md={4} key={acc.id} className="mb-3">
                                     <Card>
+                                        <Card.Img
+                                            variant="top"
+                                            src={acc.img?.startsWith('http') ? acc.img : `${process.env.REACT_APP_API_URL}/static/${acc.img}`}
+                                            style={{ height: '150px', objectFit: 'cover' }}
+                                        />
                                         <Card.Body>
                                             <Card.Title>{acc.name}</Card.Title>
                                             <Card.Text>
                                                 {acc.description}
-                                                {acc.additional_info && <small className="d-block text-muted mt-2">{acc.additional_info}</small>}
+                                                {acc.additional_info && (
+                                                    <small className="d-block text-muted mt-2">{acc.additional_info}</small>
+                                                )}
                                                 <strong className="d-block mt-2">{acc.price} руб.</strong>
                                                 <small>Доступно: {acc.availableCount}</small>
                                             </Card.Text>
-                                            <Button
-                                                variant="primary"
-                                                onClick={() => handleAddToBasket(acc.id)}
-                                                disabled={acc.availableCount === 0}
-                                            >
-                                                {acc.availableCount > 0 ? 'Купить' : 'Нет в наличии'}
-                                            </Button>
+                                            <div className="d-flex justify-content-between align-items-center">
+                                                <Button
+                                                    variant="primary"
+                                                    onClick={() => handleAddPremiumToBasket(acc.id)}
+                                                    disabled={acc.availableCount === 0}
+                                                >
+                                                    {acc.availableCount > 0 ? 'Купить' : 'Нет в наличии'}
+                                                </Button>
+                                                {user.user.role === 'ADMIN' && (
+                                                    <Button
+                                                        variant="outline-secondary"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            setEditAccountProductId(acc.id);
+                                                            setEditAccountShow(true);
+                                                        }}
+                                                    >
+                                                        ⚙️
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </Card.Body>
                                     </Card>
                                 </Col>
@@ -174,6 +221,14 @@ const ProductPage = observer(() => {
             )}
 
             <EditProduct show={editShow} onHide={() => setEditShow(false)} productId={id} />
+            <EditProduct
+                show={editAccountShow}
+                onHide={() => {
+                    setEditAccountShow(false);
+                    loadPremiumAccounts(); // обновляем список после редактирования
+                }}
+                productId={editAccountProductId}
+            />
         </Container>
     );
 });

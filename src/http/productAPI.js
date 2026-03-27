@@ -1,3 +1,4 @@
+// client/src/http/productAPI.js
 import { $authHost, $host } from "./index";
 
 export const createProduct = async (formData) => {
@@ -58,19 +59,23 @@ export const fetchPublishers = async () => {
     return data;
 };
 
-// Получение игр и приложений для выбора при создании аккаунта
+// Новая функция: получаем игры и приложения
 export const fetchGamesAndApps = async () => {
-    // Передаём productTypeId=1,4 в виде строки, разделённой запятой
-    const { data } = await $host.get('/api/product', {
-        params: {
-            productTypeId: '1,4',
-            limit: 100
-        }
-    });
-    return data.rows;
+    try {
+        const { data } = await $host.get('/api/product', {
+            params: {
+                productTypeId: '1,4',
+                limit: 100
+            }
+        });
+        return data.rows;
+    } catch (e) {
+        console.error('Fetch games and apps error:', e);
+        return [];
+    }
 };
 
-// Для совместимости со старым кодом (используется в Shop.js)
+// Для совместимости
 export const fetchOnlineGames = async () => {
     const { data } = await $host.get('/api/product', {
         params: { productTypeId: 1, isOnline: true, limit: 100 }

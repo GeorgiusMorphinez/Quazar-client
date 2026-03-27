@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";
-import {fetchTags, fetchPublishers, fetchGamesAndApps} from "../../http/productAPI";
+import { fetchTags, fetchPublishers, fetchGamesAndApps } from "../../http/productAPI";
 import { fetchPlatforms } from "../../http/platformAPI";
 import { fetchProductTypes, updateProduct, deleteProduct, fetchOneProduct, fetchOnlineGames } from "../../http/productAPI";
 

@@ -7,7 +7,7 @@ import {
     createProduct,
     fetchTags,
     fetchPublishers,
-    fetchAllGamesAndApps
+    fetchGamesAndApps
 } from "../../http/productAPI";
 
 const CreateProduct = ({ show, onHide }) => {
@@ -27,7 +27,7 @@ const CreateProduct = ({ show, onHide }) => {
         fetchTags().then(data => game.setTags(data)).catch(e => console.error(e));
         fetchPublishers().then(data => game.setPublishers(data)).catch(e => console.error(e));
         fetchPlatforms().then(data => setPlatforms(data)).catch(e => console.error(e));
-        fetchAllGamesAndApps().then(data => game.setOnlineGames(data)).catch(e => console.error(e));
+        fetchGamesAndApps().then(data => game.setOnlineGames(data)).catch(e => console.error(e));
     }, [product, game]);
 
     const handleSpecificDataChange = (key, value) => {
@@ -234,12 +234,12 @@ const CreateProduct = ({ show, onHide }) => {
                         />
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {game.selectedGame?.name || "Выберите игру"}
+                                {specificData.game_id ? game.onlineGames.find(g => g.id === specificData.game_id)?.name || "Выберите игру или приложение" : "Выберите игру или приложение"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 {game.onlineGames.map(g => (
-                                    <Dropdown.Item key={g.id} onClick={() => game.setSelectedGame(g)}>
-                                        {g.name}
+                                    <Dropdown.Item key={g.id} onClick={() => handleSpecificDataChange('game_id', g.id)}>
+                                        {g.name} ({g.type?.name === 'Приложение' ? 'Приложение' : 'Игра'})
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>

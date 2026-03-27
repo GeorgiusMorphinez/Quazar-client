@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";
-import { fetchTags, fetchPublishers } from "../../http/productAPI";
+import {fetchTags, fetchPublishers, fetchGamesAndApps} from "../../http/productAPI";
 import { fetchPlatforms } from "../../http/platformAPI";
 import { fetchProductTypes, updateProduct, deleteProduct, fetchOneProduct, fetchOnlineGames } from "../../http/productAPI";
 
@@ -26,7 +26,7 @@ const EditProduct = ({ show, onHide, productId }) => {
         fetchTags().then(data => game.setTags(data));
         fetchPublishers().then(data => game.setPublishers(data));
         fetchPlatforms().then(data => setPlatforms(data));
-        fetchOnlineGames().then(data => game.setOnlineGames(data));
+        fetchGamesAndApps().then(data => game.setOnlineGames(data)).catch(e => console.error(e));
     }, [product, game]);
 
     useEffect(() => {

@@ -36,16 +36,6 @@ export const fetchOneProduct = async (id) => {
     return data;
 };
 
-export const fetchAllGamesAndApps = async () => {
-    const { data } = await $host.get('/api/product', {
-        params: {
-            productTypeId: [1, 4], // игры и приложения
-            limit: 1000
-        }
-    });
-    return data.rows;
-};
-
 export const updateProduct = async (id, formData) => {
     const { data } = await $authHost.put(`/api/product/${id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -68,6 +58,19 @@ export const fetchPublishers = async () => {
     return data;
 };
 
+// Получение игр и приложений для выбора при создании аккаунта
+export const fetchGamesAndApps = async () => {
+    // Передаём productTypeId=1,4 в виде строки, разделённой запятой
+    const { data } = await $host.get('/api/product', {
+        params: {
+            productTypeId: '1,4',
+            limit: 100
+        }
+    });
+    return data.rows;
+};
+
+// Для совместимости со старым кодом (используется в Shop.js)
 export const fetchOnlineGames = async () => {
     const { data } = await $host.get('/api/product', {
         params: { productTypeId: 1, isOnline: true, limit: 100 }

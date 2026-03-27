@@ -1,4 +1,4 @@
-import { $host } from "./index";
+import {$authHost, $host} from "./index";
 import { jwtDecode } from 'jwt-decode';
 
 export const registration = async (email, password) => {
@@ -41,9 +41,8 @@ export const check = async () => {
         console.log('check: token from storage =', token);
         if (!token) throw new Error('Токен отсутствует');
 
-        const response = await $host.get('api/user/auth', {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        const response = await $authHost.get('api/user/auth');
+
         console.log('check: response', response.data);
         const newToken = response.data.token;
         localStorage.setItem('token', newToken);

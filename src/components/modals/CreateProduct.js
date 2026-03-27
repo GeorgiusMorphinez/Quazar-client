@@ -60,18 +60,12 @@ const CreateProduct = ({ show, onHide }) => {
             if (game.selectedPublisher) {
                 formData.append('publisherId', String(game.selectedPublisher.id));
             }
-            if (game.selectedGame) {
-                formData.append('gameId', String(game.selectedGame.id));
-            }
 
             const dataToSend = { ...specificData };
             if (product.selectedType.id === 2 || product.selectedType.id === 3) {
                 dataToSend.quantity = quantity;
             }
-            // Для аккаунтов добавляем game_id
-            if (product.selectedType.id === 3 && game.selectedGame) {
-                dataToSend.game_id = game.selectedGame.id;
-            }
+
             formData.append('specificData', JSON.stringify(dataToSend));
             formData.append('img', file);
 
@@ -87,7 +81,6 @@ const CreateProduct = ({ show, onHide }) => {
             product.setSelectedType(null);
             game.setSelectedTag(null);
             game.setSelectedPublisher(null);
-            game.setSelectedGame(null);
         } catch (e) {
             setError(e.response?.data?.message || e.message);
         } finally {

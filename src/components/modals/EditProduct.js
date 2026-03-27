@@ -3,7 +3,7 @@ import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";
 import { fetchTags, fetchPublishers, fetchGamesAndApps } from "../../http/productAPI";
 import { fetchPlatforms } from "../../http/platformAPI";
-import { fetchProductTypes, updateProduct, deleteProduct, fetchOneProduct, fetchOnlineGames } from "../../http/productAPI";
+import { fetchProductTypes, updateProduct, deleteProduct, fetchOneProduct } from "../../http/productAPI";
 
 const EditProduct = ({ show, onHide, productId }) => {
     const { product, game } = useContext(Context);
@@ -232,7 +232,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                         <Form.Control
                             className="mb-3"
                             as="textarea"
-                            placeholder="Дополнительная информация"
+                            placeholder="Дополнительная информация об аккаунте"
                             value={specificData.additional_info || ''}
                             onChange={e => handleSpecificDataChange('additional_info', e.target.value)}
                             rows={3}
@@ -242,17 +242,17 @@ const EditProduct = ({ show, onHide, productId }) => {
                             type="number"
                             placeholder="Количество аккаунтов"
                             value={quantity}
-                            onChange={e => setQuantity(Math.max(0, parseInt(e.target.value) || 0))}
-                            min="0"
+                            onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                            min="1"
                         />
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {specificData.game_id ? game.onlineGames.find(g => g.id === specificData.game_id)?.name || "Выберите игру" : "Выберите игру"}
+                                {specificData.game_id ? game.onlineGames.find(g => g.id === specificData.game_id)?.name || "Выберите игру или приложение" : "Выберите игру или приложение"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 {game.onlineGames.map(g => (
                                     <Dropdown.Item key={g.id} onClick={() => handleSpecificDataChange('game_id', g.id)}>
-                                        {g.name}
+                                        {g.name} ({g.type?.name === 'Приложение' ? 'Приложение' : 'Игра'})
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>

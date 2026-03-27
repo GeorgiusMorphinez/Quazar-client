@@ -2,16 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Card, Row, Col, Button } from 'react-bootstrap';
 import { $authHost } from '../http';
-
-console.log('Library loaded');
+import ProductDetailsModal from '../components/modals/ProductDetailsModal';
 
 const Library = () => {
     const [games, setGames] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedProductId, setSelectedProductId] = useState(null);
+    const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Проверяем User-Agent, чтобы определить, открыта ли страница в лаунчере
         const isLauncher = /QuazarLauncher/.test(navigator.userAgent);
         if (!isLauncher) {
             navigate('/download');
@@ -34,8 +34,9 @@ const Library = () => {
         fetchLibrary();
     }, [navigate]);
 
-    const handleRun = (game) => {
-        alert(`Демо-версия: запуск "${game.name}" пока не поддерживается.`);
+    const handleDetails = (productId) => {
+        setSelectedProductId(productId);
+        setShowModal(true);
     };
 
     if (loading) return <div>Загрузка...</div>;
@@ -55,14 +56,20 @@ const Library = () => {
                             />
                             <Card.Body>
                                 <Card.Title>{entry.product.name}</Card.Title>
-                                <Button variant="primary" onClick={() => handleRun(entry.product)}>
-                                    Запустить
+                                <Button variant="primary" onClick={() => handleDetails(entry.product.id)}>
+                                    Подробнее
                                 </Button>
                             </Card.Body>
                         </Card>
                     </Col>
                 ))}
             </Row>
+
+            <ProductDetailsModal
+                show={showModal}
+                onHide={() => setShowModal(false)}
+                productId={selectedProductId}
+            />
         </Container>
     );
 };

@@ -36,6 +36,16 @@ export const fetchOneProduct = async (id) => {
     return data;
 };
 
+export const fetchAllGamesAndApps = async () => {
+    const { data } = await $host.get('/api/product', {
+        params: {
+            productTypeId: [1, 4], // игры и приложения
+            limit: 1000
+        }
+    });
+    return data.rows;
+};
+
 export const updateProduct = async (id, formData) => {
     const { data } = await $authHost.put(`/api/product/${id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }

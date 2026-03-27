@@ -2,7 +2,13 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";
 import { fetchPlatforms } from "../../http/platformAPI";
-import { fetchProductTypes, createProduct, fetchTags, fetchPublishers, fetchOnlineGames } from "../../http/productAPI";
+import {
+    fetchProductTypes,
+    createProduct,
+    fetchTags,
+    fetchPublishers,
+    fetchAllGamesAndApps
+} from "../../http/productAPI";
 
 const CreateProduct = ({ show, onHide }) => {
     const { product, game } = useContext(Context);
@@ -21,7 +27,7 @@ const CreateProduct = ({ show, onHide }) => {
         fetchTags().then(data => game.setTags(data)).catch(e => console.error(e));
         fetchPublishers().then(data => game.setPublishers(data)).catch(e => console.error(e));
         fetchPlatforms().then(data => setPlatforms(data)).catch(e => console.error(e));
-        fetchOnlineGames().then(data => game.setOnlineGames(data)).catch(e => console.error(e));
+        fetchAllGamesAndApps().then(data => game.setOnlineGames(data)).catch(e => console.error(e));
     }, [product, game]);
 
     const handleSpecificDataChange = (key, value) => {

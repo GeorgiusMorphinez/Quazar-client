@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";
-import { fetchPlatforms } from "../../http/platformAPI";
 import {
     fetchProductTypes,
     createProduct,

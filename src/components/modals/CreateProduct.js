@@ -61,9 +61,10 @@ const CreateProduct = ({ show, onHide }) => {
                 formData.append('publisherId', String(game.selectedPublisher.id));
             }
 
+
             const dataToSend = { ...specificData };
-            if (product.selectedType.id === 2 || product.selectedType.id === 3) {
-                dataToSend.quantity = quantity;
+            if (product.selectedType.id === 3 && specificData.game_id) {
+                dataToSend.game_id = specificData.game_id;
             }
 
             formData.append('specificData', JSON.stringify(dataToSend));
@@ -231,7 +232,10 @@ const CreateProduct = ({ show, onHide }) => {
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 {game.onlineGames.map(g => (
-                                    <Dropdown.Item key={g.id} onClick={() => handleSpecificDataChange('game_id', g.id)}>
+                                    <Dropdown.Item key={g.id} onClick={() => {
+                                        handleSpecificDataChange('game_id', g.id);
+                                        game.setSelectedGame(g);
+                                    }}>
                                         {g.name} ({g.type?.name === 'Приложение' ? 'Приложение' : 'Игра'})
                                     </Dropdown.Item>
                                 ))}

@@ -155,7 +155,7 @@ const ProductPage = observer(() => {
             </Row>
 
             {/* Блок премиум-аккаунтов */}
-            {product.product_type_id === 1 && premiumAccounts.length > 0 && (
+            {(product.product_type_id === 1 || product.product_type_id === 4) && premiumAccounts.length > 0 && (
                 <Row className="mt-5">
                     <Col>
                         <h3>Премиум-аккаунты</h3>

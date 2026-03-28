@@ -70,7 +70,8 @@ const EditProduct = ({ show, onHide, productId }) => {
                         // Аккаунт
                         setSpecificData({
                             additional_info: data.additional_info || '',
-                            quantity: data.availableAccounts || 0
+                            quantity: data.availableAccounts || 0,
+                            game_id: data.game_id
                         });
                         setQuantity(data.availableAccounts || 0);
                     } else if (data.product_type_id === 1) {

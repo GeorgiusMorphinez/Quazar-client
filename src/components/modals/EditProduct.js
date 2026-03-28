@@ -2,12 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";
 import { fetchTags, fetchPublishers, fetchGamesAndApps } from "../../http/productAPI";
-import { fetchPlatforms } from "../../http/platformAPI";
 import { fetchProductTypes, updateProduct, deleteProduct, fetchOneProduct } from "../../http/productAPI";
 
 const EditProduct = ({ show, onHide, productId }) => {
     const { product, game } = useContext(Context);
-    const [platforms, setPlatforms] = useState([]);
     const [name, setName] = useState("");
     const [price, setPrice] = useState(0);
     const [description, setDescription] = useState("");
@@ -25,7 +23,6 @@ const EditProduct = ({ show, onHide, productId }) => {
         fetchProductTypes().then(data => product.setTypes(data));
         fetchTags().then(data => game.setTags(data));
         fetchPublishers().then(data => game.setPublishers(data));
-        fetchPlatforms().then(data => setPlatforms(data));
         fetchGamesAndApps().then(data => game.setOnlineGames(data)).catch(e => console.error(e));
     }, [product, game]);
 
@@ -34,15 +31,6 @@ const EditProduct = ({ show, onHide, productId }) => {
             const loadProduct = async () => {
                 try {
                     const data = await fetchOneProduct(productId);
-                    console.log('=== EDIT PRODUCT LOADED ===');
-                    console.log('Data:', data);
-                    console.log('product_type_id:', data.product_type_id);
-                    console.log('type object (from data.type):', data.type);
-                    console.log('tag object (from data.tag):', data.tag);
-                    console.log('publisher object (from data.publisher):', data.publisher);
-                    console.log('product.types length:', product.types.length);
-                    console.log('game.tags length:', game.tags.length);
-                    console.log('game.publishers length:', game.publishers.length);
                     setName(data.name);
                     setPrice(data.price);
                     setDescription(data.description);
@@ -62,7 +50,6 @@ const EditProduct = ({ show, onHide, productId }) => {
                     if (data.subscription && data.subscription.duration_days) {
                         // Подписка
                         setSpecificData({
-                            platform_id: data.subscription.platform_id,
                             duration_days: data.subscription.duration_days
                         });
                         setQuantity(data.availableCodes || 0);
@@ -196,18 +183,6 @@ const EditProduct = ({ show, onHide, productId }) => {
             case 2: // Подписка
                 return (
                     <>
-                        <Dropdown className="mb-3">
-                            <Dropdown.Toggle variant="outline-secondary">
-                                {specificData.platform_id ? platforms.find(p => p.id === specificData.platform_id)?.name || "Выберите платформу" : "Выберите платформу"}
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                {platforms.map(platform => (
-                                    <Dropdown.Item key={platform.id} onClick={() => handleSpecificDataChange('platform_id', platform.id)}>
-                                        {platform.name}
-                                    </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
                         <Form.Control
                             className="mb-3"
                             type="number"

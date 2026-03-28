@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import CreateTag from '../components/modals/CreateTag';
 import CreatePublisher from '../components/modals/CreatePublisher';
 import CreateProduct from '../components/modals/CreateProduct';
-import CreatePlatform from '../components/modals/CreatePlatform';
+
 
 const Admin = () => {
     const navigate = useNavigate();
@@ -22,7 +22,6 @@ const Admin = () => {
     const [tagVisible, setTagVisible] = useState(false);
     const [publisherVisible, setPublisherVisible] = useState(false);
     const [productVisible, setProductVisible] = useState(false);
-    const [platformVisible, setPlatformVisible] = useState(false);
 
     const reportTypes = [
         { value: 'visits', label: 'Посещения пользователей' },
@@ -107,13 +106,6 @@ const Admin = () => {
                 >
                     Добавить издателя
                 </Button>
-                <Button
-                    variant="outline-dark"
-                    className="mt-4 p-2"
-                    onClick={() => setPlatformVisible(true)} // New button
-                >
-                    Добавить платформу
-                </Button>
             </div>
 
             {/* Секция отчетов */}
@@ -180,7 +172,6 @@ const Admin = () => {
             <CreateProduct show={productVisible} onHide={() => setProductVisible(false)} />
             <CreateTag show={tagVisible} onHide={() => setTagVisible(false)} />
             <CreatePublisher show={publisherVisible} onHide={() => setPublisherVisible(false)} />
-            <CreatePlatform show={platformVisible} onHide={() => setPlatformVisible(false)} /> {/* New modal */}
         </Container>
     );
 };

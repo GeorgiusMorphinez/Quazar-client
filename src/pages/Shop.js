@@ -8,8 +8,6 @@ import { observer } from "mobx-react-lite";
 import { fetchProducts, fetchProductTypes } from "../http/productAPI";
 import { Context } from "../index";
 import Pages from "../components/Pages";
-import { fetchPlatforms } from "../http/platformAPI";
-import PlatformBar from "../components/PlatformBar";
 import { fetchTags, fetchPublishers, fetchOnlineGames } from "../http/productAPI";
 
 const Shop = observer(() => {
@@ -18,17 +16,15 @@ const Shop = observer(() => {
     useEffect(() => {
         const loadData = async () => {
             try {
-                const [types, tags, publishers, platforms] = await Promise.all([
+                const [types, tags, publishers] = await Promise.all([
                     fetchProductTypes().catch(() => []),
                     fetchTags().catch(() => []),
                     fetchPublishers().catch(() => []),
-                    fetchPlatforms().catch(() => [])
                 ]);
 
                 product.setTypes(types);
                 game.setTags(tags);
                 game.setPublishers(publishers);
-                game.setPlatforms(platforms);
 
                 const params = {
                     page: product.page,
@@ -42,7 +38,6 @@ const Shop = observer(() => {
                 }
                 if (game.selectedTag) params.tagId = game.selectedTag.id;
                 if (game.selectedPublisher) params.publisherId = game.selectedPublisher.id;
-                if (game.selectedPlatform && product.selectedType?.id === 2) params.platformId = game.selectedPlatform.id;
 
                 if (product.selectedType?.id === 3) {
                     const onlineGames = await fetchOnlineGames().catch(() => []);
@@ -59,10 +54,9 @@ const Shop = observer(() => {
         };
 
         loadData();
-    }, [product.page, product.selectedType, game.selectedTag, game.selectedPublisher, game.selectedPlatform, product, game]);
+    }, [product.page, product.selectedType, game.selectedTag, game.selectedPublisher, product, game]);
 
     const showCategories = product.selectedType?.id === 1 || product.selectedType?.id === 4;
-    const showPlatforms = product.selectedType?.id === 2;
     const showAll = !product.selectedType;
 
     return (
@@ -75,9 +69,6 @@ const Shop = observer(() => {
                             <div className="mt-3"><TagBar /></div>
                             <div className="mt-3"><PublisherBar /></div>
                         </>
-                    )}
-                    {!showAll && showPlatforms && (
-                        <div className="mt-3"><PlatformBar /></div>
                     )}
                 </Col>
                 <Col md={9}>

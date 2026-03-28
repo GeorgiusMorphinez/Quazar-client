@@ -6,8 +6,6 @@ export default class GameStore {
         this._publishers = []
         this._selectedTag = null
         this._selectedPublisher = null
-        this._platforms = [];
-        this._selectedPlatform = null;
         this._onlineGames = [];
         this._selectedGame = null;
         makeAutoObservable(this)
@@ -28,9 +26,6 @@ export default class GameStore {
     setSelectedPublisher(publisher) {
         this._selectedPublisher = publisher;
     }
-
-    setPlatforms(platforms) { this._platforms = platforms; }
-    setSelectedPlatform(platform) { this._selectedPlatform = platform; }
 
     setOnlineGames(games) {
         this._onlineGames = games;
@@ -55,9 +50,6 @@ export default class GameStore {
     get selectedPublisher() {
         return this._selectedPublisher;
     }
-
-    get platforms() { return this._platforms; }
-    get selectedPlatform() { return this._selectedPlatform; }
 
     get onlineGames() {
         return this._onlineGames;

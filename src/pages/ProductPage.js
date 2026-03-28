@@ -6,7 +6,7 @@ import { createRating } from '../http/ratingAPI';
 import { Context } from '../index';
 import { observer } from 'mobx-react-lite';
 import EditProduct from '../components/modals/EditProduct';
-import { $authHost } from '../http';
+import { $authHost, $host } from '../http'; // добавляем $host
 
 const ProductPage = observer(() => {
     const { user } = useContext(Context);
@@ -17,29 +17,14 @@ const ProductPage = observer(() => {
         rating: 0,
         product_type_id: null
     });
-    const [subscriptions, setSubscriptions] = useState([]);
-    const [loadingSubscriptions, setLoadingSubscriptions] = useState(false);
     const [premiumAccounts, setPremiumAccounts] = useState([]);
+    const [subscriptions, setSubscriptions] = useState([]);
     const [selectedRating, setSelectedRating] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [editShow, setEditShow] = useState(false);
-    const [editProductId, setEditProductId] = useState(null); // добавлено
+    const [editProductId, setEditProductId] = useState(null);
     const { id } = useParams();
-
-    const loadSubscriptions = useCallback(async () => {
-        if (product.product_type_id === 1 || product.product_type_id === 4) {
-            setLoadingSubscriptions(true);
-            try {
-                const { data } = await $host.get(`/api/product/product/${product.id}/subscriptions`);
-                setSubscriptions(data);
-            } catch (e) {
-                console.error('Error loading subscriptions:', e);
-            } finally {
-                setLoadingSubscriptions(false);
-            }
-        }
-    }, [product.id, product.product_type_id]);
 
     const loadProduct = useCallback(async () => {
         try {
@@ -65,6 +50,19 @@ const ProductPage = observer(() => {
             }
         } else {
             setPremiumAccounts([]);
+        }
+    }, [product.id, product.product_type_id]);
+
+    const loadSubscriptions = useCallback(async () => {
+        if (product.product_type_id === 1 || product.product_type_id === 4) {
+            try {
+                const { data } = await $host.get(`/api/product/product/${product.id}/subscriptions`);
+                setSubscriptions(data);
+            } catch (e) {
+                console.error('Error loading subscriptions:', e);
+            }
+        } else {
+            setSubscriptions([]);
         }
     }, [product.id, product.product_type_id]);
 
@@ -99,8 +97,20 @@ const ProductPage = observer(() => {
         try {
             await $authHost.post('/api/basket/add', { product_id: accountId });
             alert('Товар добавлен в корзину');
-            // Обновляем список аккаунтов, чтобы количество уменьшилось после покупки
-            loadPremiumAccounts();
+            loadPremiumAccounts(); // обновляем список аккаунтов
+        } catch (e) {
+            alert(e.response?.data?.message || 'Ошибка добавления в корзину');
+        }
+    };
+
+    const handleAddToBasket = async (productId) => {
+        if (!user.isAuth) {
+            alert('Авторизуйтесь для покупки');
+            return;
+        }
+        try {
+            await $authHost.post('/api/basket/add', { product_id: productId });
+            alert('Товар добавлен в корзину');
         } catch (e) {
             alert(e.response?.data?.message || 'Ошибка добавления в корзину');
         }
@@ -163,10 +173,7 @@ const ProductPage = observer(() => {
                         </div>
 
                         {user.user.role === 'ADMIN' && (
-                            <Button variant="outline-primary" className="mt-3" onClick={() => {
-                                setEditProductId(id);
-                                setEditShow(true);
-                            }}>
+                            <Button variant="outline-primary" className="mt-3" onClick={() => setEditShow(true)}>
                                 🔧 Редактировать
                             </Button>
                         )}
@@ -230,7 +237,7 @@ const ProductPage = observer(() => {
             )}
 
             {/* Блок подписок */}
-            {loadingSubscriptions ? <Spinner animation="border" size="sm" /> : subscriptions.length > 0 && (
+            {subscriptions.length > 0 && (
                 <Row className="mt-5">
                     <Col>
                         <h3>Подписки</h3>
@@ -269,7 +276,8 @@ const ProductPage = observer(() => {
                 show={editShow}
                 onHide={() => {
                     setEditShow(false);
-                    loadPremiumAccounts(); // обновляем список после редактирования
+                    loadPremiumAccounts();
+                    loadSubscriptions(); // обновляем подписки после редактирования
                 }}
                 productId={editProductId}
             />

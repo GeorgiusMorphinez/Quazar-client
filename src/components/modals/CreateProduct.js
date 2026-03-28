@@ -12,7 +12,6 @@ import {
 
 const CreateProduct = ({ show, onHide }) => {
     const { product, game } = useContext(Context);
-    const [platforms, setPlatforms] = useState([]);
     const [name, setName] = useState("");
     const [price, setPrice] = useState(0);
     const [description, setDescription] = useState("");
@@ -26,7 +25,6 @@ const CreateProduct = ({ show, onHide }) => {
         fetchProductTypes().then(data => product.setTypes(data)).catch(e => console.error(e));
         fetchTags().then(data => game.setTags(data)).catch(e => console.error(e));
         fetchPublishers().then(data => game.setPublishers(data)).catch(e => console.error(e));
-        fetchPlatforms().then(data => setPlatforms(data)).catch(e => console.error(e));
         fetchGamesAndApps().then(data => game.setOnlineGames(data)).catch(e => console.error(e));
     }, [product, game]);
 

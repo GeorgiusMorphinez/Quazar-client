@@ -40,7 +40,7 @@ const ProductPage = observer(() => {
     }, [id]);
 
     const loadPremiumAccounts = useCallback(async () => {
-        if (product.product_type_id === 1) {
+        if (product.product_type_id === 1 || product.product_type_id === 4) {
             try {
                 const accounts = await fetchPremiumAccounts(product.id);
                 setPremiumAccounts(accounts);

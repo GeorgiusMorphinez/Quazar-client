@@ -136,54 +136,17 @@ const CreateProduct = ({ show, onHide }) => {
                     </>
                 );
 
-            case 4: // Приложение
-                return (
-                    <>
-                        <Dropdown className="mb-3">
-                            <Dropdown.Toggle variant="outline-secondary">
-                                {game.selectedTag?.name || "Выберите тег"}
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>
-                                    Без тега
-                                </Dropdown.Item>
-                                {game.tags.map(tag => (
-                                    <Dropdown.Item key={tag.id} onClick={() => game.setSelectedTag(tag)}>
-                                        {tag.name}
-                                    </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
-
-                        <Dropdown className="mb-3">
-                            <Dropdown.Toggle variant="outline-secondary">
-                                {game.selectedPublisher?.name || "Выберите издателя"}
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedPublisher(null)}>
-                                    Без издателя
-                                </Dropdown.Item>
-                                {game.publishers.map(publisher => (
-                                    <Dropdown.Item key={publisher.id} onClick={() => game.setSelectedPublisher(publisher)}>
-                                        {publisher.name}
-                                    </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </>
-                );
-
             case 2: // Подписка
                 return (
                     <>
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {specificData.platform_id ? platforms.find(p => p.id === specificData.platform_id)?.name || "Выберите платформу" : "Выберите платформу"}
+                                {specificData.target_product_id ? game.onlineGames.find(g => g.id === specificData.target_product_id)?.name || "Выберите игру или приложение" : "Выберите игру или приложение"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                {platforms.map(platform => (
-                                    <Dropdown.Item key={platform.id} onClick={() => handleSpecificDataChange('platform_id', platform.id)}>
-                                        {platform.name}
+                                {game.onlineGames.map(g => (
+                                    <Dropdown.Item key={g.id} onClick={() => handleSpecificDataChange('target_product_id', g.id)}>
+                                        {g.name} ({g.type?.name === 'Приложение' ? 'Приложение' : 'Игра'})
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>
@@ -195,6 +158,14 @@ const CreateProduct = ({ show, onHide }) => {
                             value={specificData.duration_days || ''}
                             onChange={e => handleSpecificDataChange('duration_days', e.target.value)}
                             min="1"
+                        />
+                        <Form.Control
+                            className="mb-3"
+                            type="number"
+                            placeholder="Доступное количество"
+                            value={specificData.available_count || ''}
+                            onChange={e => handleSpecificDataChange('available_count', e.target.value)}
+                            min="0"
                         />
                         <Form.Control
                             className="mb-3"
@@ -237,6 +208,43 @@ const CreateProduct = ({ show, onHide }) => {
                                         game.setSelectedGame(g);
                                     }}>
                                         {g.name} ({g.type?.name === 'Приложение' ? 'Приложение' : 'Игра'})
+                                    </Dropdown.Item>
+                                ))}
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </>
+                );
+
+            case 4: // Приложение
+                return (
+                    <>
+                        <Dropdown className="mb-3">
+                            <Dropdown.Toggle variant="outline-secondary">
+                                {game.selectedTag?.name || "Выберите тег"}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>
+                                    Без тега
+                                </Dropdown.Item>
+                                {game.tags.map(tag => (
+                                    <Dropdown.Item key={tag.id} onClick={() => game.setSelectedTag(tag)}>
+                                        {tag.name}
+                                    </Dropdown.Item>
+                                ))}
+                            </Dropdown.Menu>
+                        </Dropdown>
+
+                        <Dropdown className="mb-3">
+                            <Dropdown.Toggle variant="outline-secondary">
+                                {game.selectedPublisher?.name || "Выберите издателя"}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                <Dropdown.Item onClick={() => game.setSelectedPublisher(null)}>
+                                    Без издателя
+                                </Dropdown.Item>
+                                {game.publishers.map(publisher => (
+                                    <Dropdown.Item key={publisher.id} onClick={() => game.setSelectedPublisher(publisher)}>
+                                        {publisher.name}
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>

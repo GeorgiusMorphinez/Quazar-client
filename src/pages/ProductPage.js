@@ -17,6 +17,8 @@ const ProductPage = observer(() => {
         rating: 0,
         product_type_id: null
     });
+    const [subscriptions, setSubscriptions] = useState([]);
+    const [loadingSubscriptions, setLoadingSubscriptions] = useState(false);
     const [premiumAccounts, setPremiumAccounts] = useState([]);
     const [selectedRating, setSelectedRating] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -24,6 +26,20 @@ const ProductPage = observer(() => {
     const [editShow, setEditShow] = useState(false);
     const [editProductId, setEditProductId] = useState(null); // добавлено
     const { id } = useParams();
+
+    const loadSubscriptions = useCallback(async () => {
+        if (product.product_type_id === 1 || product.product_type_id === 4) {
+            setLoadingSubscriptions(true);
+            try {
+                const { data } = await $host.get(`/api/product/product/${product.id}/subscriptions`);
+                setSubscriptions(data);
+            } catch (e) {
+                console.error('Error loading subscriptions:', e);
+            } finally {
+                setLoadingSubscriptions(false);
+            }
+        }
+    }, [product.id, product.product_type_id]);
 
     const loadProduct = useCallback(async () => {
         try {
@@ -59,6 +75,10 @@ const ProductPage = observer(() => {
     useEffect(() => {
         loadPremiumAccounts();
     }, [loadPremiumAccounts]);
+
+    useEffect(() => {
+        loadSubscriptions();
+    }, [loadSubscriptions]);
 
     const handleRatingSubmit = async () => {
         try {
@@ -200,6 +220,41 @@ const ProductPage = observer(() => {
                                                     </Button>
                                                 )}
                                             </div>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                            ))}
+                        </Row>
+                    </Col>
+                </Row>
+            )}
+
+            {/* Блок подписок */}
+            {loadingSubscriptions ? <Spinner animation="border" size="sm" /> : subscriptions.length > 0 && (
+                <Row className="mt-5">
+                    <Col>
+                        <h3>Подписки</h3>
+                        <p>Получите доступ к премиум-функциям</p>
+                        <Row>
+                            {subscriptions.map(sub => (
+                                <Col md={4} key={sub.id} className="mb-3">
+                                    <Card>
+                                        <Card.Body>
+                                            <Card.Title>{sub.name}</Card.Title>
+                                            <Card.Text>
+                                                {sub.description}
+                                                <strong className="d-block mt-2">{sub.price} руб.</strong>
+                                                <small>Длительность: {sub.duration_days} дней</small>
+                                                <br />
+                                                <small>Доступно: {sub.available_count}</small>
+                                            </Card.Text>
+                                            <Button
+                                                variant="primary"
+                                                onClick={() => handleAddToBasket(sub.id)}
+                                                disabled={sub.available_count === 0}
+                                            >
+                                                {sub.available_count > 0 ? 'Купить' : 'Нет в наличии'}
+                                            </Button>
                                         </Card.Body>
                                     </Card>
                                 </Col>

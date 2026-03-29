@@ -10,6 +10,9 @@ const Library = () => {
     const [showModal, setShowModal] = useState(false);
     const [accounts, setAccounts] = useState([]);
     const [loadingAccounts, setLoadingAccounts] = useState(false);
+    const [subscriptions, setSubscriptions] = useState([]);
+    const [loadingSubscriptions, setLoadingSubscriptions] = useState(false);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,6 +39,15 @@ const Library = () => {
         setSelectedProduct(product);
         setShowModal(true);
         setLoadingAccounts(true);
+        setLoadingSubscriptions(true);
+        try {
+            const { data } = await $authHost.get(`/api/library/product/${product.id}/subscriptions`);
+            setSubscriptions(data);
+        } catch (e) {
+            console.error('Error fetching subscriptions:', e);
+        } finally {
+            setLoadingSubscriptions(false);
+        }
         try {
             const { data } = await $authHost.get(`/api/library/product/${product.id}/accounts`);
             setAccounts(data);
@@ -122,6 +134,21 @@ const Library = () => {
                                 ))
                             ) : (
                                 <p>Нет приобретённых аккаунтов.</p>
+                            )}
+                            <hr />
+                            <h5>Активные подписки</h5>
+                            {loadingSubscriptions ? (
+                                <Spinner animation="border" size="sm" />
+                            ) : subscriptions.length > 0 ? (
+                                subscriptions.map(sub => (
+                                    <div key={sub.id} className="mb-3 p-2 border rounded">
+                                        <div><strong>Название:</strong> {sub.name}</div>
+                                        <div><strong>Длительность:</strong> {sub.duration_days} дней</div>
+                                        <div><strong>Активна до:</strong> {new Date(sub.end_date).toLocaleDateString()}</div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>Нет активных подписок.</p>
                             )}
                         </Modal.Body>
                     </>

@@ -164,14 +164,6 @@ const CreateProduct = ({ show, onHide }) => {
                             onChange={e => handleSpecificDataChange('available_count', e.target.value)}
                             min="0"
                         />
-                        <Form.Control
-                            className="mb-3"
-                            type="number"
-                            placeholder="Количество кодов"
-                            value={quantity}
-                            onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                            min="1"
-                        />
                     </>
                 );
 

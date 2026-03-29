@@ -9,7 +9,6 @@ const TypeBar = observer(() => {
     const getTypeIcon = (typeId) => {
         switch (typeId) {
             case 1: return '🎮'; // Игра
-            case 2: return '🔄'; // Подписка
             case 4: return '🖥️'; // Приложение
             default: return '📦';
         }
@@ -27,7 +26,7 @@ const TypeBar = observer(() => {
                 Все товары
             </ListGroup.Item>
 
-            {product.types.filter(type => type.id !== 3).map(type => (
+            {product.types.filter(type => type.id !== 2 && type.id !== 3).map(type => (
                 <ListGroup.Item
                     style={{ cursor: "pointer" }}
                     active={type.id === product.selectedType?.id}

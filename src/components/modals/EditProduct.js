@@ -56,7 +56,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                             duration_days: sub.duration_days,
                             available_count: sub.available_count
                         });
-                        setQuantity(sub.available_count || 1);
+                        setQuantity(sub.available_count);
                     } else if (data.accounts && data.accounts.length > 0) {
                         // Аккаунт
                         setSpecificData({
@@ -101,9 +101,6 @@ const EditProduct = ({ show, onHide, productId }) => {
             formData.append('name', name.trim());
             formData.append('price', String(price));
             formData.append('description', description);
-            if (currentType?.id === 2 || currentType?.id === 3) {
-                formData.append('quantity', String(quantity));
-            }
 
             if (currentTag) {
                 formData.append('tagId', String(currentTag.id));
@@ -112,11 +109,21 @@ const EditProduct = ({ show, onHide, productId }) => {
                 formData.append('publisherId', String(currentPublisher.id));
             }
 
-            const dataToSend = { ...specificData };
-            if (currentType?.id === 2 || currentType?.id === 3) {
-                dataToSend.quantity = quantity;
+            // Для подписки отдельно формируем specificData
+            if (currentType?.id === 2) {
+                const subscriptionData = {
+                    target_product_id: specificData.target_product_id,
+                    duration_days: specificData.duration_days,
+                    available_count: specificData.available_count
+                };
+                formData.append('specificData', JSON.stringify(subscriptionData));
+            } else {
+                const dataToSend = { ...specificData };
+                if (currentType?.id === 3) {
+                    dataToSend.quantity = quantity;
+                }
+                formData.append('specificData', JSON.stringify(dataToSend));
             }
-            formData.append('specificData', JSON.stringify(dataToSend));
 
             if (file) formData.append('img', file);
 

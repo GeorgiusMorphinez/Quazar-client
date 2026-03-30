@@ -246,6 +246,11 @@ const ProductPage = observer(() => {
                             {subscriptions.map(sub => (
                                 <Col md={4} key={sub.id} className="mb-3">
                                     <Card>
+                                        <Card.Img
+                                            variant="top"
+                                            src={sub.img?.startsWith('http') ? sub.img : `${process.env.REACT_APP_API_URL}/static/${sub.img}`}
+                                            style={{ height: '150px', objectFit: 'cover' }}
+                                        />
                                         <Card.Body>
                                             <Card.Title>{sub.name}</Card.Title>
                                             <Card.Text>

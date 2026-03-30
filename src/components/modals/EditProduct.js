@@ -3,12 +3,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";
 import { fetchTags, fetchPublishers, fetchGamesAndApps } from "../../http/productAPI";
-import { fetchPlatforms } from "../../http/platformAPI";
 import { fetchProductTypes, updateProduct, deleteProduct, fetchOneProduct } from "../../http/productAPI";
 
 const EditProduct = ({ show, onHide, productId }) => {
     const { product, game } = useContext(Context);
-    const [platforms, setPlatforms] = useState([]);
     const [name, setName] = useState("");
     const [price, setPrice] = useState(0);
     const [description, setDescription] = useState("");
@@ -26,7 +24,6 @@ const EditProduct = ({ show, onHide, productId }) => {
         fetchProductTypes().then(data => product.setTypes(data));
         fetchTags().then(data => game.setTags(data));
         fetchPublishers().then(data => game.setPublishers(data));
-        fetchPlatforms().then(data => setPlatforms(data));
         fetchGamesAndApps().then(data => game.setOnlineGames(data)).catch(e => console.error(e));
     }, [product, game]);
 

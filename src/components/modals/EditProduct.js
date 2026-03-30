@@ -1,11 +1,14 @@
+// client/src/components/modals/EditProduct.js
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";
 import { fetchTags, fetchPublishers, fetchGamesAndApps } from "../../http/productAPI";
+import { fetchPlatforms } from "../../http/platformAPI";
 import { fetchProductTypes, updateProduct, deleteProduct, fetchOneProduct } from "../../http/productAPI";
 
 const EditProduct = ({ show, onHide, productId }) => {
     const { product, game } = useContext(Context);
+    const [platforms, setPlatforms] = useState([]);
     const [name, setName] = useState("");
     const [price, setPrice] = useState(0);
     const [description, setDescription] = useState("");
@@ -23,6 +26,7 @@ const EditProduct = ({ show, onHide, productId }) => {
         fetchProductTypes().then(data => product.setTypes(data));
         fetchTags().then(data => game.setTags(data));
         fetchPublishers().then(data => game.setPublishers(data));
+        fetchPlatforms().then(data => setPlatforms(data));
         fetchGamesAndApps().then(data => game.setOnlineGames(data)).catch(e => console.error(e));
     }, [product, game]);
 
@@ -46,19 +50,21 @@ const EditProduct = ({ show, onHide, productId }) => {
                     const publisherObj = game.publishers.find(p => p.id === data.publisher_id);
                     setCurrentPublisher(publisherObj || null);
 
-                    // Специфичные данные – проверяем наличие реальных данных
-                    if (data.subscription && data.subscription.duration_days) {
+                    // Специфичные данные
+                    if (data.subscriptionProducts && data.subscriptionProducts.length > 0) {
                         // Подписка
+                        const sub = data.subscriptionProducts[0];
                         setSpecificData({
-                            duration_days: data.subscription.duration_days
+                            target_product_id: sub.target_product_id,
+                            duration_days: sub.duration_days,
+                            available_count: sub.available_count
                         });
-                        setQuantity(data.availableCodes || 0);
+                        setQuantity(sub.available_count || 1);
                     } else if (data.accounts && data.accounts.length > 0) {
                         // Аккаунт
                         setSpecificData({
                             additional_info: data.additional_info || '',
-                            quantity: data.availableAccounts || 0,
-                            game_id: data.game_id
+                            quantity: data.availableAccounts || 0
                         });
                         setQuantity(data.availableAccounts || 0);
                     } else if (data.product_type_id === 1) {
@@ -183,6 +189,18 @@ const EditProduct = ({ show, onHide, productId }) => {
             case 2: // Подписка
                 return (
                     <>
+                        <Dropdown className="mb-3">
+                            <Dropdown.Toggle variant="outline-secondary">
+                                {specificData.target_product_id ? game.onlineGames.find(g => g.id === specificData.target_product_id)?.name || "Выберите игру или приложение" : "Выберите игру или приложение"}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                {game.onlineGames.map(g => (
+                                    <Dropdown.Item key={g.id} onClick={() => handleSpecificDataChange('target_product_id', g.id)}>
+                                        {g.name} ({g.type?.name === 'Приложение' ? 'Приложение' : 'Игра'})
+                                    </Dropdown.Item>
+                                ))}
+                            </Dropdown.Menu>
+                        </Dropdown>
                         <Form.Control
                             className="mb-3"
                             type="number"
@@ -194,10 +212,10 @@ const EditProduct = ({ show, onHide, productId }) => {
                         <Form.Control
                             className="mb-3"
                             type="number"
-                            placeholder="Количество"
-                            value={quantity}
-                            onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                            min="1"
+                            placeholder="Доступное количество"
+                            value={specificData.available_count || ''}
+                            onChange={e => handleSpecificDataChange('available_count', e.target.value)}
+                            min="0"
                         />
                     </>
                 );
@@ -208,7 +226,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                         <Form.Control
                             className="mb-3"
                             as="textarea"
-                            placeholder="Дополнительная информация об аккаунте"
+                            placeholder="Дополнительная информация"
                             value={specificData.additional_info || ''}
                             onChange={e => handleSpecificDataChange('additional_info', e.target.value)}
                             rows={3}
@@ -218,17 +236,17 @@ const EditProduct = ({ show, onHide, productId }) => {
                             type="number"
                             placeholder="Количество аккаунтов"
                             value={quantity}
-                            onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                            min="1"
+                            onChange={e => setQuantity(Math.max(0, parseInt(e.target.value) || 0))}
+                            min="0"
                         />
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {specificData.game_id ? game.onlineGames.find(g => g.id === specificData.game_id)?.name || "Выберите игру или приложение" : "Выберите игру или приложение"}
+                                {specificData.game_id ? game.onlineGames.find(g => g.id === specificData.game_id)?.name || "Выберите игру" : "Выберите игру"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 {game.onlineGames.map(g => (
                                     <Dropdown.Item key={g.id} onClick={() => handleSpecificDataChange('game_id', g.id)}>
-                                        {g.name} ({g.type?.name === 'Приложение' ? 'Приложение' : 'Игра'})
+                                        {g.name}
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>

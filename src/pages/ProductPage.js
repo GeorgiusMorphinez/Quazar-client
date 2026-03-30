@@ -260,13 +260,27 @@ const ProductPage = observer(() => {
                                                 <br />
                                                 <small>Доступно: {sub.available_count}</small>
                                             </Card.Text>
-                                            <Button
-                                                variant="primary"
-                                                onClick={() => handleAddToBasket(sub.id)}
-                                                disabled={sub.available_count === 0}
-                                            >
-                                                {sub.available_count > 0 ? 'Купить' : 'Нет в наличии'}
-                                            </Button>
+                                            <div className="d-flex justify-content-between align-items-center">
+                                                <Button
+                                                    variant="primary"
+                                                    onClick={() => handleAddToBasket(sub.id)}
+                                                    disabled={sub.available_count === 0}
+                                                >
+                                                    {sub.available_count > 0 ? 'Купить' : 'Нет в наличии'}
+                                                </Button>
+                                                {user.user.role === 'ADMIN' && (
+                                                    <Button
+                                                        variant="outline-secondary"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            setEditProductId(sub.id);
+                                                            setEditShow(true);
+                                                        }}
+                                                    >
+                                                        ⚙️
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </Card.Body>
                                     </Card>
                                 </Col>

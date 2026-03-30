@@ -188,7 +188,9 @@ const EditProduct = ({ show, onHide, productId }) => {
                     <>
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {specificData.target_product_id ? game.onlineGames.find(g => g.id === specificData.target_product_id)?.name || "Выберите игру или приложение" : "Выберите игру или приложение"}
+                                {specificData.target_product_id
+                                    ? game.onlineGames.find(g => g.id === specificData.target_product_id)?.name || "Выберите игру или приложение"
+                                    : "Выберите игру или приложение"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 {game.onlineGames.map(g => (

@@ -9,10 +9,9 @@ const Library = () => {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [accounts, setAccounts] = useState([]);
-    const [loadingAccounts, setLoadingAccounts] = useState(false);
     const [subscriptions, setSubscriptions] = useState([]);
+    const [loadingAccounts, setLoadingAccounts] = useState(false);
     const [loadingSubscriptions, setLoadingSubscriptions] = useState(false);
-
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -38,7 +37,19 @@ const Library = () => {
     const handleOpenModal = async (product) => {
         setSelectedProduct(product);
         setShowModal(true);
+
+        // Загрузка аккаунтов
         setLoadingAccounts(true);
+        try {
+            const { data } = await $authHost.get(`/api/library/product/${product.id}/accounts`);
+            setAccounts(data);
+        } catch (e) {
+            console.error('Error fetching accounts:', e);
+        } finally {
+            setLoadingAccounts(false);
+        }
+
+        // Загрузка подписок
         setLoadingSubscriptions(true);
         try {
             const { data } = await $authHost.get(`/api/library/product/${product.id}/subscriptions`);
@@ -48,20 +59,13 @@ const Library = () => {
         } finally {
             setLoadingSubscriptions(false);
         }
-        try {
-            const { data } = await $authHost.get(`/api/library/product/${product.id}/accounts`);
-            setAccounts(data);
-        } catch (e) {
-            console.error('Error fetching accounts:', e);
-        } finally {
-            setLoadingAccounts(false);
-        }
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
         setSelectedProduct(null);
         setAccounts([]);
+        setSubscriptions([]);
     };
 
     const handleRun = (product) => {
@@ -75,24 +79,28 @@ const Library = () => {
             <Container className="mt-4">
                 <h2>Моя библиотека</h2>
                 <Row>
-                    {games.map((entry) => (
-                        <Col key={entry.id} md={3} className="mb-4">
-                            <Card style={{ cursor: 'pointer' }} onClick={() => handleOpenModal(entry.product)}>
-                                <Card.Img
-                                    variant="top"
-                                    src={entry.product.img?.startsWith('http')
-                                        ? entry.product.img
-                                        : `${process.env.REACT_APP_API_URL}/static/${entry.product.img}`}
-                                />
-                                <Card.Body>
-                                    <Card.Title>{entry.product.name}</Card.Title>
-                                    <Button variant="primary" onClick={(e) => { e.stopPropagation(); handleRun(entry.product); }}>
-                                        Запустить
-                                    </Button>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    ))}
+                    {games.length === 0 ? (
+                        <p>Нет приобретённых игр или приложений.</p>
+                    ) : (
+                        games.map((entry) => (
+                            <Col key={entry.id} md={3} className="mb-4">
+                                <Card style={{ cursor: 'pointer' }} onClick={() => handleOpenModal(entry.product)}>
+                                    <Card.Img
+                                        variant="top"
+                                        src={entry.product.img?.startsWith('http')
+                                            ? entry.product.img
+                                            : `${process.env.REACT_APP_API_URL}/static/${entry.product.img}`}
+                                    />
+                                    <Card.Body>
+                                        <Card.Title>{entry.product.name}</Card.Title>
+                                        <Button variant="primary" onClick={(e) => { e.stopPropagation(); handleRun(entry.product); }}>
+                                            Запустить
+                                        </Button>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        ))
+                    )}
                 </Row>
             </Container>
 
@@ -120,6 +128,7 @@ const Library = () => {
                                     </Button>
                                 </Col>
                             </Row>
+
                             <hr />
                             <h5>Купленные аккаунты</h5>
                             {loadingAccounts ? (
@@ -135,6 +144,7 @@ const Library = () => {
                             ) : (
                                 <p>Нет приобретённых аккаунтов.</p>
                             )}
+
                             <hr />
                             <h5>Активные подписки</h5>
                             {loadingSubscriptions ? (

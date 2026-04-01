@@ -12,7 +12,6 @@ const Library = () => {
     const [loadingAccounts, setLoadingAccounts] = useState(false);
     const [subscriptions, setSubscriptions] = useState([]);
     const [loadingSubscriptions, setLoadingSubscriptions] = useState(false);
-
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -62,6 +61,7 @@ const Library = () => {
         setShowModal(false);
         setSelectedProduct(null);
         setAccounts([]);
+        setSubscriptions([]);
     };
 
     const handleRun = (product) => {
@@ -75,24 +75,28 @@ const Library = () => {
             <Container className="mt-4">
                 <h2>Моя библиотека</h2>
                 <Row>
-                    {games.map((entry) => (
-                        <Col key={entry.id} md={3} className="mb-4">
-                            <Card style={{ cursor: 'pointer' }} onClick={() => handleOpenModal(entry.product)}>
-                                <Card.Img
-                                    variant="top"
-                                    src={entry.product.img?.startsWith('http')
-                                        ? entry.product.img
-                                        : `${process.env.REACT_APP_API_URL}/static/${entry.product.img}`}
-                                />
-                                <Card.Body>
-                                    <Card.Title>{entry.product.name}</Card.Title>
-                                    <Button variant="primary" onClick={(e) => { e.stopPropagation(); handleRun(entry.product); }}>
-                                        Запустить
-                                    </Button>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    ))}
+                    {games.map((entry) => {
+                        const product = entry.libraryProduct; // правильное поле
+                        if (!product) return null;
+                        return (
+                            <Col key={entry.id} md={3} className="mb-4">
+                                <Card style={{ cursor: 'pointer' }} onClick={() => handleOpenModal(product)}>
+                                    <Card.Img
+                                        variant="top"
+                                        src={product.img?.startsWith('http')
+                                            ? product.img
+                                            : `${process.env.REACT_APP_API_URL}/static/${product.img}`}
+                                    />
+                                    <Card.Body>
+                                        <Card.Title>{product.name}</Card.Title>
+                                        <Button variant="primary" onClick={(e) => { e.stopPropagation(); handleRun(product); }}>
+                                            Запустить
+                                        </Button>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        );
+                    })}
                 </Row>
             </Container>
 

@@ -31,12 +31,14 @@ const EditProduct = ({ show, onHide, productId }) => {
             const loadProduct = async () => {
                 try {
                     const data = await fetchOneProduct(productId);
+                    console.log('EditProduct loadProduct data:', data);
                     setName(data.name);
                     setPrice(data.price);
                     setDescription(data.description);
                     setFile(null);
                     setError('');
                     setLoading(false);
+
 
                     const typeObj = product.types.find(t => t.id === data.product_type_id);
                     setCurrentType(typeObj || null);

@@ -1,4 +1,3 @@
-// client/src/components/modals/EditProduct.js
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Dropdown, Form, Modal, Alert } from "react-bootstrap";
 import { Context } from "../../index";

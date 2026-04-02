@@ -6,7 +6,6 @@ export default class UserStore {
         this._user = {};
         makeAutoObservable(this);
 
-        // При создании стора пытаемся восстановить пользователя из localStorage
         this.loadUserFromStorage();
     }
 

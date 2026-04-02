@@ -53,27 +53,3 @@ export const check = async () => {
         throw e;
     }
 };
-
-export const refreshToken = async () => {
-    try {
-        const token = localStorage.getItem('token');
-        if (!token) throw new Error('Токен отсутствует');
-
-        const response = await $host.get('/api/user/auth', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        const newToken = response.data.token;
-        localStorage.setItem('token', newToken);
-        return jwtDecode(newToken);
-    } catch (e) {
-        console.error('Token refresh failed:', e);
-        // Удаляем токен при ошибке 401
-        if (e.response?.status === 401) {
-            localStorage.removeItem('token');
-        }
-        throw e;
-    }
-};

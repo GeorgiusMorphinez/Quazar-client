@@ -20,7 +20,7 @@ const Pages = observer(() => {
         <Pagination className="mt-3">
             {pages.map((page) => (
                 <Pagination.Item
-                    key={page} // Добавляем ключ
+                    key={page}
                     active={product.page === page}
                     onClick={() => product.setPage(page)}
                 >

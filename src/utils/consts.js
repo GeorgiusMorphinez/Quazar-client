@@ -3,7 +3,6 @@ export const LOGIN_ROUTE = "/login"
 export const REGISTRATION_ROUTE = "/registration"
 export const SHOP_ROUTE = "/"
 export const BASKET_ROUTE = "/basket"
-export const GAME_ROUTE = "/game"
 export const PRODUCT_ROUTE = "/product"
 export const ORDERS_ROUTE = "/orders";
 export const LIBRARY_ROUTE = "/library";

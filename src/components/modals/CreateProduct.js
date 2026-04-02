@@ -64,8 +64,8 @@ const CreateProduct = ({ show, onHide }) => {
             }
 
             const dataToSend = { ...specificData };
-            if (product.selectedType.id === 3 && specificData.game_id) {
-                dataToSend.game_id = specificData.game_id;
+            if (product.selectedType.id === 3 && specificData.target_product_id) {
+                dataToSend.target_product_id = specificData.target_product_id;
             }
             // Для подписок и аккаунтов передаём quantity
             if (product.selectedType.id === 2 || product.selectedType.id === 3) {
@@ -196,12 +196,12 @@ const CreateProduct = ({ show, onHide }) => {
                         />
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {specificData.game_id ? game.onlineGames.find(g => g.id === specificData.game_id)?.name || "Выберите игру или приложение" : "Выберите игру или приложение"}
+                                {specificData.target_product_id ? game.onlineGames.find(g => g.id === specificData.target_product_id)?.name || "Выберите игру или приложение" : "Выберите игру или приложение"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 {game.onlineGames.map(g => (
                                     <Dropdown.Item key={g.id} onClick={() => {
-                                        handleSpecificDataChange('game_id', g.id);
+                                        handleSpecificDataChange('target_product_id', g.id);
                                         game.setSelectedGame(g);
                                     }}>
                                         {g.name} ({g.type?.name === 'Приложение' ? 'Приложение' : 'Игра'})

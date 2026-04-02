@@ -60,7 +60,8 @@ const EditProduct = ({ show, onHide, productId }) => {
                         // Аккаунт
                         setSpecificData({
                             additional_info: data.additional_info || '',
-                            quantity: data.availableAccounts || 0
+                            quantity: data.availableAccounts || 0,
+                            game_id: data.target_product_id // если поле в ответе называется target_product_id
                         });
                         setQuantity(data.availableAccounts || 0);
                     } else if (data.product_type_id === 1) {
@@ -246,11 +247,11 @@ const EditProduct = ({ show, onHide, productId }) => {
                         />
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
-                                {specificData.game_id ? game.onlineGames.find(g => g.id === specificData.game_id)?.name || "Выберите игру" : "Выберите игру"}
+                                {specificData.target_product_id ? game.onlineGames.find(g => g.id === specificData.target_product_id)?.name || "Выберите игру" : "Выберите игру"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 {game.onlineGames.map(g => (
-                                    <Dropdown.Item key={g.id} onClick={() => handleSpecificDataChange('game_id', g.id)}>
+                                    <Dropdown.Item key={g.id} onClick={() => handleSpecificDataChange('target_product_id', g.id)}>
                                         {g.name}
                                     </Dropdown.Item>
                                 ))}

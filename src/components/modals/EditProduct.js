@@ -64,15 +64,10 @@ const EditProduct = ({ show, onHide, productId }) => {
                             game_id: data.target_product_id // если поле в ответе называется target_product_id
                         });
                         setQuantity(data.availableAccounts || 0);
-                    } else if (data.product_type_id === 1) {
-                        // Игра
+                    } else if (data.product_type_id === 1 || data.product_type_id === 4) {
                         setSpecificData({
                             is_online: data.is_online || false
                         });
-                        setQuantity(1);
-                    } else if (data.product_type_id === 4) {
-                        // Приложение
-                        setSpecificData({});
                         setQuantity(1);
                     }
                 } catch (e) {

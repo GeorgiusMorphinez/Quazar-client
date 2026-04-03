@@ -195,20 +195,13 @@ const EditProduct = ({ show, onHide, productId }) => {
             case 2: // Подписка
                 return (
                     <>
-                        <Dropdown className="mb-3">
-                            <Dropdown.Toggle variant="outline-secondary">
-                                {specificData.target_product_id
-                                    ? game.onlineGames.find(g => g.id === specificData.target_product_id)?.name || "Выберите игру или приложение"
-                                    : "Выберите игру или приложение"}
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                {game.onlineGames.map(g => (
-                                    <Dropdown.Item key={g.id} onClick={() => handleSpecificDataChange('target_product_id', g.id)}>
-                                        {g.name} ({g.type?.name === 'Приложение' ? 'Приложение' : 'Игра'})
-                                    </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
+                        <Form.Control
+                            type="text"
+                            value={targetProductName || "Не указано"}
+                            disabled
+                            readOnly
+                            className="mb-3"
+                        />
                         <Form.Control
                             className="mb-3"
                             type="number"
@@ -232,6 +225,13 @@ const EditProduct = ({ show, onHide, productId }) => {
                 return (
                     <>
                         <Form.Control
+                            type="text"
+                            value={targetProductName || "Не указано"}
+                            disabled
+                            readOnly
+                            className="mb-3"
+                        />
+                        <Form.Control
                             className="mb-3"
                             as="textarea"
                             placeholder="Дополнительная информация"
@@ -247,18 +247,6 @@ const EditProduct = ({ show, onHide, productId }) => {
                             onChange={e => setQuantity(Math.max(0, parseInt(e.target.value) || 0))}
                             min="0"
                         />
-                        <Dropdown className="mb-3">
-                            <Dropdown.Toggle variant="outline-secondary">
-                                {specificData.target_product_id ? game.onlineGames.find(g => g.id === specificData.target_product_id)?.name || "Выберите игру" : "Выберите игру"}
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                {game.onlineGames.map(g => (
-                                    <Dropdown.Item key={g.id} onClick={() => handleSpecificDataChange('target_product_id', g.id)}>
-                                        {g.name}
-                                    </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
                     </>
                 );
 

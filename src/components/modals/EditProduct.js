@@ -14,6 +14,7 @@ const EditProduct = ({ show, onHide, productId }) => {
     const [specificData, setSpecificData] = useState({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [targetProductName, setTargetProductName] = useState('');
 
     const [currentType, setCurrentType] = useState(null);
     const [currentTag, setCurrentTag] = useState(null);
@@ -58,14 +59,19 @@ const EditProduct = ({ show, onHide, productId }) => {
                             available_count: sub.available_count
                         });
                         setQuantity(sub.available_count);
+
+                        const target = game.onlineGames.find(g => g.id === sub.target_product_id);
+                        setTargetProductName(target ? target.name : 'Не указано');
                     } else if (data.accounts && data.accounts.length > 0) {
                         // Аккаунт
                         setSpecificData({
                             additional_info: data.additional_info || '',
                             quantity: data.availableAccounts || 0,
-                            game_id: data.target_product_id // если поле в ответе называется target_product_id
+                            target_product_id: data.target_product_id // если поле в ответе называется target_product_id
                         });
                         setQuantity(data.availableAccounts || 0);
+                        const target = game.onlineGames.find(g => g.id === data.target_product_id);
+                        setTargetProductName(target ? target.name : 'Не указано');
                     } else if (data.product_type_id === 1 || data.product_type_id === 4) {
                         setSpecificData({
                             is_online: data.is_online || false
@@ -109,7 +115,6 @@ const EditProduct = ({ show, onHide, productId }) => {
             // Для подписки отдельно формируем specificData
             if (currentType?.id === 2) {
                 const subscriptionData = {
-                    target_product_id: specificData.target_product_id,
                     duration_days: specificData.duration_days,
                     available_count: specificData.available_count
                 };

@@ -25,9 +25,8 @@ const Admin = () => {
 
     const reportTypes = [
         { value: 'visits', label: 'Посещения пользователей' },
-        { value: 'sales', label: 'Продажи игр' },
-        { value: 'tags', label: 'Популярные тэги' },
-        { value: 'carts', label: 'Неоформленные корзины' }
+        { value: 'sales', label: 'Продажи товаров' },
+        { value: 'tags', label: 'Популярные тэги' }
     ];
 
     const generateReport = async () => {

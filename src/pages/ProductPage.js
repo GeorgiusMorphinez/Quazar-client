@@ -175,7 +175,7 @@ const ProductPage = observer(() => {
                         {user.user.role === 'ADMIN' && (
                             <Button
                                 variant="outline-primary"
-                                className="mt-3" 
+                                className="mt-3"
                                 onClick={() => {
                                 setEditProductId(product.id);
                                 setEditShow(true);

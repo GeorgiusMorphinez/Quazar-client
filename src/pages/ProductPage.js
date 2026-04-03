@@ -143,7 +143,7 @@ const ProductPage = observer(() => {
                     <Image width={300} height={300} src={imageUrl} thumbnail alt={product.name} />
                 </Col>
                 <Col md={8}>
-                    <h2> className="text-break"{product.name}</h2>
+                    <h2 className="text-break"> {product.name}</h2>
                     <p style={{ wordWrap: 'break-word', whiteSpace: 'pre-wrap' }}>{product.description}</p>
 
                     <div className="rating-section mt-4">

@@ -32,7 +32,6 @@ const Auth = observer(() => {
 
             user.setUser(userData);
             user.setIsAuth(true);
-
             navigate(SHOP_ROUTE);
         } catch (e) {
             alert(e.response?.data?.message || e.message || 'Ошибка авторизации');
@@ -54,8 +53,8 @@ const Auth = observer(() => {
                         placeholder="Введите ваш email..."
                         value={email}
                         onChange={e => setEmail(e.target.value)}
-                        maxLength={255}
                         disabled={loading}
+                        maxLength={255}
                     />
                     <Form.Control
                         className="mt-3"
@@ -63,8 +62,8 @@ const Auth = observer(() => {
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                         type="password"
-                        maxLength={50}
                         disabled={loading}
+                        maxLength={50}
                     />
                     <Row className="d-flex justify-content-between mt-3 pl-3 pr-3">
                         {isLogin ?

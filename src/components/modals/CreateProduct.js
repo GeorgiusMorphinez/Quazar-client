@@ -59,8 +59,8 @@ const CreateProduct = ({ show, onHide }) => {
             }
 
             const dataToSend = { ...specificData };
-            if (product.selectedType.id === 3 && specificData.target_product_id) {
-                dataToSend.target_product_id = specificData.target_product_id;
+            if (product.selectedType.id === 3 && specificData.game_id) {
+                dataToSend.game_id = specificData.game_id;
             }
             formData.append('specificData', JSON.stringify(dataToSend));
             formData.append('img', file);
@@ -96,9 +96,7 @@ const CreateProduct = ({ show, onHide }) => {
                                 {game.selectedTag?.name || "Выберите тег"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>
-                                    Без тега
-                                </Dropdown.Item>
+                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>Без тега</Dropdown.Item>
                                 {game.tags.map(tag => (
                                     <Dropdown.Item key={tag.id} onClick={() => game.setSelectedTag(tag)}>
                                         {tag.name}
@@ -112,9 +110,7 @@ const CreateProduct = ({ show, onHide }) => {
                                 {game.selectedPublisher?.name || "Выберите издателя"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedPublisher(null)}>
-                                    Без издателя
-                                </Dropdown.Item>
+                                <Dropdown.Item onClick={() => game.setSelectedPublisher(null)}>Без издателя</Dropdown.Item>
                                 {game.publishers.map(publisher => (
                                     <Dropdown.Item key={publisher.id} onClick={() => game.setSelectedPublisher(publisher)}>
                                         {publisher.name}
@@ -153,6 +149,7 @@ const CreateProduct = ({ show, onHide }) => {
                             value={specificData.duration_days || ''}
                             onChange={e => handleSpecificDataChange('duration_days', e.target.value)}
                             min="1"
+                            max="3650"
                         />
                         <Form.Control
                             className="mb-3"
@@ -161,6 +158,7 @@ const CreateProduct = ({ show, onHide }) => {
                             value={specificData.available_count || ''}
                             onChange={e => handleSpecificDataChange('available_count', e.target.value)}
                             min="0"
+                            max="9999"
                         />
                     </>
                 );
@@ -184,6 +182,7 @@ const CreateProduct = ({ show, onHide }) => {
                             value={quantity}
                             onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                             min="1"
+                            max="1000"
                         />
                         <Dropdown className="mb-3">
                             <Dropdown.Toggle variant="outline-secondary">
@@ -208,9 +207,7 @@ const CreateProduct = ({ show, onHide }) => {
                                 {game.selectedTag?.name || "Выберите тег"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>
-                                    Без тега
-                                </Dropdown.Item>
+                                <Dropdown.Item onClick={() => game.setSelectedTag(null)}>Без тега</Dropdown.Item>
                                 {game.tags.map(tag => (
                                     <Dropdown.Item key={tag.id} onClick={() => game.setSelectedTag(tag)}>
                                         {tag.name}
@@ -224,9 +221,7 @@ const CreateProduct = ({ show, onHide }) => {
                                 {game.selectedPublisher?.name || "Выберите издателя"}
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => game.setSelectedPublisher(null)}>
-                                    Без издателя
-                                </Dropdown.Item>
+                                <Dropdown.Item onClick={() => game.setSelectedPublisher(null)}>Без издателя</Dropdown.Item>
                                 {game.publishers.map(publisher => (
                                     <Dropdown.Item key={publisher.id} onClick={() => game.setSelectedPublisher(publisher)}>
                                         {publisher.name}
@@ -270,6 +265,9 @@ const CreateProduct = ({ show, onHide }) => {
                         placeholder="Название товара"
                         maxLength={255}
                     />
+                    <div className="text-muted small mb-2 text-end">
+                        {name.length}/{255}
+                    </div>
 
                     <Form.Control
                         className="mb-3"
@@ -278,6 +276,7 @@ const CreateProduct = ({ show, onHide }) => {
                         onChange={e => setPrice(Number(e.target.value))}
                         placeholder="Цена"
                         min="0"
+                        max="999999.99"
                         step="0.01"
                     />
 
@@ -290,6 +289,9 @@ const CreateProduct = ({ show, onHide }) => {
                         rows={3}
                         maxLength={500}
                     />
+                    <div className="text-muted small mb-2 text-end">
+                        {description.length}/{500}
+                    </div>
 
                     <Form.Control
                         className="mb-3"

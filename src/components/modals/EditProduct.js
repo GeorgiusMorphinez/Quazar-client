@@ -209,6 +209,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                             value={specificData.duration_days || ''}
                             onChange={e => handleSpecificDataChange('duration_days', e.target.value)}
                             min="1"
+                            max="3650"
                         />
                         <Form.Control
                             className="mb-3"
@@ -217,6 +218,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                             value={specificData.available_count || ''}
                             onChange={e => handleSpecificDataChange('available_count', e.target.value)}
                             min="0"
+                            max="9999"
                         />
                     </>
                 );
@@ -240,6 +242,9 @@ const EditProduct = ({ show, onHide, productId }) => {
                             rows={3}
                             maxLength={500}
                         />
+                        <div className="text-muted small mb-2 text-end">
+                            {specificData.additional_info?.length || 0}/500
+                        </div>
                         <Form.Control
                             className="mb-3"
                             type="number"
@@ -247,6 +252,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                             value={quantity}
                             onChange={e => setQuantity(Math.max(0, parseInt(e.target.value) || 0))}
                             min="0"
+                            max="1000"
                         />
                     </>
                 );

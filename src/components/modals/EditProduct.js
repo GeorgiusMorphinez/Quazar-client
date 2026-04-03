@@ -27,6 +27,16 @@ const EditProduct = ({ show, onHide, productId }) => {
         fetchGamesAndApps().then(data => game.setOnlineGames(data)).catch(e => console.error(e));
     }, [product, game]);
 
+    // Отдельный эффект для обновления названия целевого товара, когда загрузятся onlineGames
+    useEffect(() => {
+        if (specificData.target_product_id && game.onlineGames.length) {
+            const target = game.onlineGames.find(g => g.id === specificData.target_product_id);
+            setTargetProductName(target ? target.name : 'Не указано');
+        } else if (specificData.target_product_id && !game.onlineGames.length) {
+            setTargetProductName('Загрузка...');
+        }
+    }, [specificData.target_product_id, game.onlineGames]);
+
     useEffect(() => {
         if (productId && show) {
             const loadProduct = async () => {
@@ -58,13 +68,6 @@ const EditProduct = ({ show, onHide, productId }) => {
                             available_count: sub.available_count
                         });
                         setQuantity(sub.available_count);
-                        // Сохраняем название целевого товара
-                        if (game.onlineGames.length) {
-                            const target = game.onlineGames.find(g => g.id === sub.target_product_id);
-                            setTargetProductName(target ? target.name : 'Не указано');
-                        } else {
-                            setTargetProductName('Загрузка...');
-                        }
                     } else if (data.accounts && data.accounts.length > 0) {
                         // Аккаунт
                         setSpecificData({
@@ -73,15 +76,6 @@ const EditProduct = ({ show, onHide, productId }) => {
                             target_product_id: data.target_product_id
                         });
                         setQuantity(data.availableAccounts || 0);
-                        // Сохраняем название целевого товара
-                        if (data.target_product_id && game.onlineGames.length) {
-                            const target = game.onlineGames.find(g => g.id === data.target_product_id);
-                            setTargetProductName(target ? target.name : 'Не указано');
-                        } else if (data.target_product_id && !game.onlineGames.length) {
-                            setTargetProductName('Загрузка...');
-                        } else {
-                            setTargetProductName('Не указано');
-                        }
                     } else if (data.product_type_id === 1 || data.product_type_id === 4) {
                         setSpecificData({
                             is_online: data.is_online || false
@@ -95,7 +89,7 @@ const EditProduct = ({ show, onHide, productId }) => {
             };
             loadProduct();
         }
-    }, [productId, show, product.types, game.tags, game.publishers, game.onlineGames]);
+    }, [productId, show, product.types, game.tags, game.publishers]);
 
     const handleSpecificDataChange = (key, value) => {
         setSpecificData(prev => ({ ...prev, [key]: value }));
@@ -129,13 +123,11 @@ const EditProduct = ({ show, onHide, productId }) => {
                     available_count: specificData.available_count
                 };
                 formData.append('specificData', JSON.stringify(subscriptionData));
-                console.log('Updating subscription with:', subscriptionData);
             } else {
                 const dataToSend = { ...specificData };
                 if (currentType?.id === 3) {
                     dataToSend.quantity = quantity;
                     delete dataToSend.target_product_id; // удаляем, чтобы не обновлять
-                    console.log('Updating account with:', dataToSend);
                 }
                 formData.append('specificData', JSON.stringify(dataToSend));
             }

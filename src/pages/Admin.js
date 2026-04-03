@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Container, Button, Form, Alert } from 'react-bootstrap';
 import { $authHost } from '../http';
 import { SHOP_ROUTE } from '../utils/consts';
@@ -6,19 +6,25 @@ import { useNavigate } from 'react-router-dom';
 import CreateTag from '../components/modals/CreateTag';
 import CreatePublisher from '../components/modals/CreatePublisher';
 import CreateProduct from '../components/modals/CreateProduct';
-
+import { Context } from '../index';
 
 const Admin = () => {
+    const { user } = useContext(Context);
     const navigate = useNavigate();
 
-    // Состояния для отчетов
+    // Редирект, если не админ
+    useEffect(() => {
+        if (!user.isAuth || user.user.role !== 'ADMIN') {
+            navigate(SHOP_ROUTE);
+        }
+    }, [user, navigate]);
+
     const [reportType, setReportType] = useState('visits');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [error, setError] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
 
-    // Состояния для модальных окон
     const [tagVisible, setTagVisible] = useState(false);
     const [publisherVisible, setPublisherVisible] = useState(false);
     const [productVisible, setProductVisible] = useState(false);
@@ -26,7 +32,8 @@ const Admin = () => {
     const reportTypes = [
         { value: 'visits', label: 'Посещения пользователей' },
         { value: 'sales', label: 'Продажи товаров' },
-        { value: 'tags', label: 'Популярные тэги' }
+        { value: 'tags', label: 'Популярные тэги' },
+        { value: 'carts', label: 'Неоформленные корзины' }
     ];
 
     const generateReport = async () => {
@@ -38,7 +45,6 @@ const Admin = () => {
                 throw new Error('Укажите начальную и конечную даты');
             }
 
-            // Используем $authHost для авторизованных запросов
             const response = await $authHost.get(
                 `/api/reports/${reportType}`,
                 {
@@ -47,7 +53,6 @@ const Admin = () => {
                 }
             );
 
-            // Создаем ссылку для скачивания
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
@@ -77,13 +82,16 @@ const Admin = () => {
         }
     };
 
+    // Если пользователь не админ, не рендерим содержимое
+    if (!user.isAuth || user.user.role !== 'ADMIN') {
+        return null;
+    }
+
     return (
         <Container className="d-flex flex-column">
             <h2>Панель администратора</h2>
 
-            {/* Секция управления */}
             <div className="mb-4">
-
                 <Button
                     variant="outline-dark"
                     className="mt-4 p-2"
@@ -107,7 +115,6 @@ const Admin = () => {
                 </Button>
             </div>
 
-            {/* Секция отчетов */}
             <div className="report-section border p-4 rounded-3">
                 <h4>Генерация отчетов</h4>
 
@@ -167,7 +174,6 @@ const Admin = () => {
                 </Form>
             </div>
 
-            {/* Модальные окна */}
             <CreateProduct show={productVisible} onHide={() => setProductVisible(false)} />
             <CreateTag show={tagVisible} onHide={() => setTagVisible(false)} />
             <CreatePublisher show={publisherVisible} onHide={() => setPublisherVisible(false)} />

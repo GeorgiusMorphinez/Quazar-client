@@ -58,18 +58,9 @@ const CreateProduct = ({ show, onHide }) => {
                 formData.append('publisherId', String(game.selectedPublisher.id));
             }
 
-            // Для аккаунтов передаём game_id
-            if (product.selectedType.id === 3 && game.selectedGame) {
-                formData.append('gameId', String(game.selectedGame.id));
-            }
-
             const dataToSend = { ...specificData };
             if (product.selectedType.id === 3 && specificData.target_product_id) {
                 dataToSend.target_product_id = specificData.target_product_id;
-            }
-            // Для подписок и аккаунтов передаём quantity
-            if (product.selectedType.id === 2 || product.selectedType.id === 3) {
-                dataToSend.quantity = quantity;
             }
             formData.append('specificData', JSON.stringify(dataToSend));
             formData.append('img', file);
@@ -86,7 +77,6 @@ const CreateProduct = ({ show, onHide }) => {
             product.setSelectedType(null);
             game.setSelectedTag(null);
             game.setSelectedPublisher(null);
-            game.setSelectedGame(null); // сброс выбранной игры
         } catch (e) {
             setError(e.response?.data?.message || e.message);
         } finally {
@@ -185,6 +175,7 @@ const CreateProduct = ({ show, onHide }) => {
                             value={specificData.additional_info || ''}
                             onChange={e => handleSpecificDataChange('additional_info', e.target.value)}
                             rows={3}
+                            maxLength={500}
                         />
                         <Form.Control
                             className="mb-3"
@@ -200,10 +191,7 @@ const CreateProduct = ({ show, onHide }) => {
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 {game.onlineGames.map(g => (
-                                    <Dropdown.Item key={g.id} onClick={() => {
-                                        handleSpecificDataChange('target_product_id', g.id);
-                                        game.setSelectedGame(g);
-                                    }}>
+                                    <Dropdown.Item key={g.id} onClick={() => handleSpecificDataChange('target_product_id', g.id)}>
                                         {g.name} ({g.type?.name === 'Приложение' ? 'Приложение' : 'Игра'})
                                     </Dropdown.Item>
                                 ))}
@@ -280,6 +268,7 @@ const CreateProduct = ({ show, onHide }) => {
                         value={name}
                         onChange={e => setName(e.target.value)}
                         placeholder="Название товара"
+                        maxLength={255}
                     />
 
                     <Form.Control
@@ -299,6 +288,7 @@ const CreateProduct = ({ show, onHide }) => {
                         onChange={e => setDescription(e.target.value)}
                         placeholder="Описание товара"
                         rows={3}
+                        maxLength={500}
                     />
 
                     <Form.Control

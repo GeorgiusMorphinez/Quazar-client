@@ -27,7 +27,6 @@ const EditProduct = ({ show, onHide, productId }) => {
         fetchGamesAndApps().then(data => game.setOnlineGames(data)).catch(e => console.error(e));
     }, [product, game]);
 
-    // Отдельный эффект для обновления названия целевого товара, когда загрузятся onlineGames
     useEffect(() => {
         if (specificData.target_product_id && game.onlineGames.length) {
             const target = game.onlineGames.find(g => g.id === specificData.target_product_id);
@@ -58,9 +57,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                     const publisherObj = game.publishers.find(p => p.id === data.publisher_id);
                     setCurrentPublisher(publisherObj || null);
 
-                    // Специфичные данные
                     if (data.subscriptionProducts && data.subscriptionProducts.length > 0) {
-                        // Подписка
                         const sub = data.subscriptionProducts[0];
                         setSpecificData({
                             target_product_id: sub.target_product_id,
@@ -69,7 +66,6 @@ const EditProduct = ({ show, onHide, productId }) => {
                         });
                         setQuantity(sub.available_count);
                     } else if (data.accounts && data.accounts.length > 0) {
-                        // Аккаунт
                         setSpecificData({
                             additional_info: data.additional_info || '',
                             quantity: data.availableAccounts || 0,
@@ -116,7 +112,6 @@ const EditProduct = ({ show, onHide, productId }) => {
                 formData.append('publisherId', String(currentPublisher.id));
             }
 
-            // Для подписки отдельно формируем specificData (без target_product_id)
             if (currentType?.id === 2) {
                 const subscriptionData = {
                     duration_days: specificData.duration_days,
@@ -127,7 +122,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                 const dataToSend = { ...specificData };
                 if (currentType?.id === 3) {
                     dataToSend.quantity = quantity;
-                    delete dataToSend.target_product_id; // удаляем, чтобы не обновлять
+                    delete dataToSend.target_product_id;
                 }
                 formData.append('specificData', JSON.stringify(dataToSend));
             }
@@ -243,6 +238,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                             value={specificData.additional_info || ''}
                             onChange={e => handleSpecificDataChange('additional_info', e.target.value)}
                             rows={3}
+                            maxLength={500}
                         />
                         <Form.Control
                             className="mb-3"
@@ -317,6 +313,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                         value={name}
                         onChange={e => setName(e.target.value)}
                         placeholder="Название товара"
+                        maxLength={255}
                     />
 
                     <Form.Control
@@ -336,6 +333,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                         onChange={e => setDescription(e.target.value)}
                         placeholder="Описание товара"
                         rows={3}
+                        maxLength={500}
                     />
 
                     <Form.Control

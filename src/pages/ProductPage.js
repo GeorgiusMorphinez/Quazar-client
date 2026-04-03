@@ -144,7 +144,7 @@ const ProductPage = observer(() => {
                 </Col>
                 <Col md={8}>
                     <h2>{product.name}</h2>
-                    <p>{product.description}</p>
+                    <p style={{ wordWrap: 'break-word', whiteSpace: 'pre-wrap' }}>{product.description}</p>
 
                     <div className="rating-section mt-4">
                         <h4>Ваша оценка:</h4>

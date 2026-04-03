@@ -6,7 +6,6 @@ import {observer} from "mobx-react-lite";
 import {Context} from "../index";
 import {login, registration} from "../http/userAPI";
 
-
 const Auth = observer(() => {
     const {user} = useContext(Context);
     const location = useLocation();
@@ -26,17 +25,14 @@ const Auth = observer(() => {
                 userData = await registration(email, password);
             }
 
-            // Проверяем наличие токена
             const token = localStorage.getItem('token');
             if (!token) {
                 throw new Error('Токен не получен');
             }
 
-            // Обновляем состояние пользователя
             user.setUser(userData);
             user.setIsAuth(true);
 
-            // Перенаправляем на главную
             navigate(SHOP_ROUTE);
         } catch (e) {
             alert(e.response?.data?.message || e.message || 'Ошибка авторизации');
@@ -58,6 +54,7 @@ const Auth = observer(() => {
                         placeholder="Введите ваш email..."
                         value={email}
                         onChange={e => setEmail(e.target.value)}
+                        maxLength={255}
                         disabled={loading}
                     />
                     <Form.Control
@@ -66,6 +63,7 @@ const Auth = observer(() => {
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                         type="password"
+                        maxLength={50}
                         disabled={loading}
                     />
                     <Row className="d-flex justify-content-between mt-3 pl-3 pr-3">

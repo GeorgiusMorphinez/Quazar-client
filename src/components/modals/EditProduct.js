@@ -14,11 +14,11 @@ const EditProduct = ({ show, onHide, productId }) => {
     const [specificData, setSpecificData] = useState({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [targetProductName, setTargetProductName] = useState('');
 
     const [currentType, setCurrentType] = useState(null);
     const [currentTag, setCurrentTag] = useState(null);
     const [currentPublisher, setCurrentPublisher] = useState(null);
+    const [targetProductName, setTargetProductName] = useState('');
 
     useEffect(() => {
         fetchProductTypes().then(data => product.setTypes(data));
@@ -40,7 +40,6 @@ const EditProduct = ({ show, onHide, productId }) => {
                     setError('');
                     setLoading(false);
 
-
                     const typeObj = product.types.find(t => t.id === data.product_type_id);
                     setCurrentType(typeObj || null);
 
@@ -49,7 +48,9 @@ const EditProduct = ({ show, onHide, productId }) => {
                     const publisherObj = game.publishers.find(p => p.id === data.publisher_id);
                     setCurrentPublisher(publisherObj || null);
 
+                    // Специфичные данные
                     if (data.subscriptionProducts && data.subscriptionProducts.length > 0) {
+                        // Подписка
                         const sub = data.subscriptionProducts[0];
                         setSpecificData({
                             target_product_id: sub.target_product_id,
@@ -57,7 +58,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                             available_count: sub.available_count
                         });
                         setQuantity(sub.available_count);
-                        // Установка названия целевого товара
+                        // Сохраняем название целевого товара
                         if (game.onlineGames.length) {
                             const target = game.onlineGames.find(g => g.id === sub.target_product_id);
                             setTargetProductName(target ? target.name : 'Не указано');
@@ -65,6 +66,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                             setTargetProductName('Загрузка...');
                         }
                     } else if (data.accounts && data.accounts.length > 0) {
+                        // Аккаунт
                         setSpecificData({
                             additional_info: data.additional_info || '',
                             quantity: data.availableAccounts || 0,
@@ -78,7 +80,9 @@ const EditProduct = ({ show, onHide, productId }) => {
                             setTargetProductName('Загрузка...');
                         }
                     } else if (data.product_type_id === 1 || data.product_type_id === 4) {
-                        setSpecificData({ is_online: data.is_online || false });
+                        setSpecificData({
+                            is_online: data.is_online || false
+                        });
                         setQuantity(1);
                     }
                 } catch (e) {
@@ -115,7 +119,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                 formData.append('publisherId', String(currentPublisher.id));
             }
 
-            // Для подписки отдельно формируем specificData
+            // Для подписки отдельно формируем specificData (без target_product_id)
             if (currentType?.id === 2) {
                 const subscriptionData = {
                     duration_days: specificData.duration_days,
@@ -126,7 +130,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                 const dataToSend = { ...specificData };
                 if (currentType?.id === 3) {
                     dataToSend.quantity = quantity;
-                    delete dataToSend.target_product_id;
+                    delete dataToSend.target_product_id; // удаляем, чтобы не обновлять
                 }
                 formData.append('specificData', JSON.stringify(dataToSend));
             }

@@ -27,7 +27,9 @@ const CreateTag = ({ show, onHide }) => {
                         value={value}
                         onChange={e => setValue(e.target.value)}
                         placeholder="Введите название тэга"
+                        maxLength={100}
                     />
+                    <div className="text-muted small text-end">{value.length}/100</div>
                 </Form>
             </Modal.Body>
             <Modal.Footer>

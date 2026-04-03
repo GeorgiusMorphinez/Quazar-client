@@ -173,7 +173,7 @@ const CreateProduct = ({ show, onHide }) => {
                             value={specificData.additional_info || ''}
                             onChange={e => handleSpecificDataChange('additional_info', e.target.value)}
                             rows={3}
-                            maxLength={500}
+                            maxLength={300}
                         />
                         <Form.Control
                             className="mb-3"
@@ -263,10 +263,10 @@ const CreateProduct = ({ show, onHide }) => {
                         value={name}
                         onChange={e => setName(e.target.value)}
                         placeholder="Название товара"
-                        maxLength={255}
+                        maxLength={100}
                     />
                     <div className="text-muted small mb-2 text-end">
-                        {name.length}/{255}
+                        {name.length}/{100}
                     </div>
 
                     <Form.Control
@@ -276,7 +276,7 @@ const CreateProduct = ({ show, onHide }) => {
                         onChange={e => setPrice(Number(e.target.value))}
                         placeholder="Цена"
                         min="0"
-                        max="999999.99"
+                        max="9999.99"
                         step="0.01"
                     />
 
@@ -287,10 +287,10 @@ const CreateProduct = ({ show, onHide }) => {
                         onChange={e => setDescription(e.target.value)}
                         placeholder="Описание товара"
                         rows={3}
-                        maxLength={500}
+                        maxLength={300}
                     />
                     <div className="text-muted small mb-2 text-end">
-                        {description.length}/{500}
+                        {description.length}/{300}
                     </div>
 
                     <Form.Control

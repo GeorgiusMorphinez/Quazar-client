@@ -41,7 +41,6 @@ const EditProduct = ({ show, onHide, productId }) => {
             const loadProduct = async () => {
                 try {
                     const data = await fetchOneProduct(productId);
-                    console.log('EditProduct loadProduct data:', data);
                     setName(data.name);
                     setPrice(data.price);
                     setDescription(data.description);
@@ -240,10 +239,10 @@ const EditProduct = ({ show, onHide, productId }) => {
                             value={specificData.additional_info || ''}
                             onChange={e => handleSpecificDataChange('additional_info', e.target.value)}
                             rows={3}
-                            maxLength={500}
+                            maxLength={300}
                         />
                         <div className="text-muted small mb-2 text-end">
-                            {specificData.additional_info?.length || 0}/500
+                            {(specificData.additional_info?.length || 0)}/300
                         </div>
                         <Form.Control
                             className="mb-3"
@@ -319,8 +318,9 @@ const EditProduct = ({ show, onHide, productId }) => {
                         value={name}
                         onChange={e => setName(e.target.value)}
                         placeholder="Название товара"
-                        maxLength={255}
+                        maxLength={100}
                     />
+                    <div className="text-muted small mb-2 text-end">{name.length}/{100}</div>
 
                     <Form.Control
                         className="mb-3"
@@ -329,6 +329,7 @@ const EditProduct = ({ show, onHide, productId }) => {
                         onChange={e => setPrice(Number(e.target.value))}
                         placeholder="Цена"
                         min="0"
+                        max="9999.99"
                         step="0.01"
                     />
 
@@ -339,8 +340,9 @@ const EditProduct = ({ show, onHide, productId }) => {
                         onChange={e => setDescription(e.target.value)}
                         placeholder="Описание товара"
                         rows={3}
-                        maxLength={500}
+                        maxLength={300}
                     />
+                    <div className="text-muted small mb-2 text-end">{description.length}/{300}</div>
 
                     <Form.Control
                         className="mb-3"

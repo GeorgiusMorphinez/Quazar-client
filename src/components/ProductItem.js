@@ -94,6 +94,7 @@ const ProductItem = observer(({ product }) => {
 
                 <Card.Body className="d-flex flex-column">
                     <Card.Title
+                        className="text-break"
                         onClick={() => navigate(`/product/${product.id}`)}
                         style={{ cursor: 'pointer' }}
                     >

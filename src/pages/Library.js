@@ -88,7 +88,9 @@ const Library = () => {
                                             : `${process.env.REACT_APP_API_URL}/static/${product.img}`}
                                     />
                                     <Card.Body>
-                                        <Card.Title>{product.name}</Card.Title>
+                                        <Card.Title className="text-break" onClick={() => navigate(`/product/${product.id}`)}>
+                                            {product.name}
+                                        </Card.Title>
                                         <Button variant="primary" onClick={(e) => { e.stopPropagation(); handleRun(product); }}>
                                             Запустить
                                         </Button>

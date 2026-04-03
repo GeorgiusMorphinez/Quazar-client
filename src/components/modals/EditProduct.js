@@ -73,11 +73,14 @@ const EditProduct = ({ show, onHide, productId }) => {
                             target_product_id: data.target_product_id
                         });
                         setQuantity(data.availableAccounts || 0);
-                        if (game.onlineGames.length) {
+                        // Сохраняем название целевого товара
+                        if (data.target_product_id && game.onlineGames.length) {
                             const target = game.onlineGames.find(g => g.id === data.target_product_id);
                             setTargetProductName(target ? target.name : 'Не указано');
-                        } else {
+                        } else if (data.target_product_id && !game.onlineGames.length) {
                             setTargetProductName('Загрузка...');
+                        } else {
+                            setTargetProductName('Не указано');
                         }
                     } else if (data.product_type_id === 1 || data.product_type_id === 4) {
                         setSpecificData({
@@ -126,11 +129,13 @@ const EditProduct = ({ show, onHide, productId }) => {
                     available_count: specificData.available_count
                 };
                 formData.append('specificData', JSON.stringify(subscriptionData));
+                console.log('Updating subscription with:', subscriptionData);
             } else {
                 const dataToSend = { ...specificData };
                 if (currentType?.id === 3) {
                     dataToSend.quantity = quantity;
                     delete dataToSend.target_product_id; // удаляем, чтобы не обновлять
+                    console.log('Updating account with:', dataToSend);
                 }
                 formData.append('specificData', JSON.stringify(dataToSend));
             }

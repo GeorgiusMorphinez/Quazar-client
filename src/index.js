@@ -6,7 +6,7 @@ import GameStore from "./store/GameStore";
 import BasketStore from "./store/BasketStore";
 import ProductStore from "./store/ProductStore";
 import OrderStore from "./store/OrderStore"; // Новый
-import 'C:\Users\alex0\WebstormProjects\NewGameStore\client\src\global';
+import global from './global';
 
 
 export const Context = createContext(null);

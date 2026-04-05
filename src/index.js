@@ -6,8 +6,6 @@ import GameStore from "./store/GameStore";
 import BasketStore from "./store/BasketStore";
 import ProductStore from "./store/ProductStore";
 import OrderStore from "./store/OrderStore"; // Новый
-import './global.css';
-
 
 export const Context = createContext(null);
 

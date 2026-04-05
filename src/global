@@ -1,0 +1,165 @@
+/* ===== Глобальные стили Glassmorphism ===== */
+
+/* Импорт шрифтов */
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    background-attachment: fixed;
+    color: #f0f0f0;
+    line-height: 1.5;
+}
+
+/* Стеклянные карточки */
+.card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Навбар (полупрозрачный, фиксированный) */
+.navbar {
+    background: rgba(15, 12, 41, 0.7) !important;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Кнопки в стеклянном стиле */
+.btn {
+    border-radius: 40px;
+    padding: 0.5rem 1.2rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.btn-outline-light {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+.btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: white;
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #6a11cb, #2575fc);
+    border: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #5a0fb5, #1e63e0);
+    transform: scale(0.98);
+}
+
+/* Формы и поля ввода */
+.form-control, .form-select {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    color: white;
+    padding: 0.75rem 1rem;
+    backdrop-filter: blur(4px);
+}
+
+.form-control:focus, .form-select:focus {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #6a11cb;
+    box-shadow: 0 0 0 0.2rem rgba(106, 17, 203, 0.25);
+    color: white;
+}
+
+/* Модальные окна */
+.modal-content {
+    background: rgba(20, 20, 40, 0.9);
+    backdrop-filter: blur(20px);
+    border-radius: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.modal-header, .modal-footer {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Футер */
+footer {
+    background: rgba(15, 12, 41, 0.8) !important;
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 4rem;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .card {
+        border-radius: 20px;
+    }
+    .btn {
+        padding: 0.4rem 1rem;
+        font-size: 0.9rem;
+    }
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    /* Карточки в одну колонку */
+    .row-cols-md-3 > .col {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    /* Уменьшаем отступы в модалках */
+    .modal-body {
+        padding: 1rem;
+    }
+}
+
+/* Дополнительные улучшения */
+a {
+    color: #bb9aff;
+    transition: color 0.2s;
+}
+a:hover {
+    color: white;
+    text-decoration: none;
+}
+
+.badge {
+    font-weight: 500;
+    padding: 0.4rem 0.8rem;
+    border-radius: 40px;
+}
+
+/* Стили для Pagination (Bootstrap) */
+.pagination .page-link {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    border-radius: 40px;
+    margin: 0 4px;
+}
+.pagination .page-item.active .page-link {
+    background: linear-gradient(45deg, #6a11cb, #2575fc);
+}
